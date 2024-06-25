@@ -28,7 +28,7 @@ ClassMethod Load(sslconfigs As %DynamicObject)
 		
 		set keyPath = ..JoinPath(sslconfigs.certificatespath, sslconfig.key)
 		set caPath = ..JoinPath(sslconfigs.certificatespath, sslconfig.capath)
-		set sc = ..CreateSSLConfig(sslconfig.name, certPath, keyPath, caPath)
+		set sc = ..CreateSSLConfig(sslconfig.name, certPath, keyPath, caPath, sslconfig.cipherList)
 
 		if $$$ISERR(sc)
 		{
@@ -38,7 +38,7 @@ ClassMethod Load(sslconfigs As %DynamicObject)
 }
 
 /// Create the SSL configuration
-ClassMethod CreateSSLConfig(name As %String, certPath As %String = "", keyPath As %String = "", caPath As %String = "") As %Status
+ClassMethod CreateSSLConfig(name As %String, certPath As %String = "", keyPath As %String = "", caPath As %String = "", cipherList As %String = "") As %Status
 {
 	new $Namespace
 	set $Namespace = "%SYS"
@@ -46,7 +46,11 @@ ClassMethod CreateSSLConfig(name As %String, certPath As %String = "", keyPath A
 	set props("CertificateFile") = certPath
 	set props("PrivateKeyFile") = keyPath
 	set props("CAFile") = caPath
-    set props("CipherList") = "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384"
+
+	if (cipherList '= "")
+	{
+	    set props("CipherList") = cipherList
+	}
 	
 	if '##class(Security.SSLConfigs).Exists(name)
 	{
