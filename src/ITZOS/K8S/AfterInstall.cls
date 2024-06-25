@@ -6,70 +6,76 @@ Class ITZOS.K8S.AfterInstall
 ClassMethod ExecuteActions(configmapFilename As %String, setMonitorConfig As %Boolean = 0)
 {
     set config = {}.%FromJSONFile(configmapFilename)
- 
-    if setMonitorConfig && $ISOBJECT(config.monitoring)
-    {
-        write "Set up monitoring config: ", !
-        do ##class(IRISELK.BusinessOperation.Config).SetConfig(configmapFilename)
-    }
+    #dim allHandlers as %DynamicObject = ..GetAfterInstallHandlers()
+	#dim iterator As %Iterator.Object = config.%GetIterator()
 
-    if $ISOBJECT(config.systemSecurityParameters)
-    {
-        write "Set System Security Parameters: ", !
-        do ##class(ITZOS.K8S.Utilities.SystemSecurityParameters).Load(config.systemSecurityParameters)
-    }
+	while iterator.%GetNext(.key, .value)
+	{
+        #; write "Handling key ",key,!
+        #dim handlers as %DynamicArray = allHandlers.%Get(key)
 
-    if $ISOBJECT(config.sslconfigs)
-    {
-        write "Loading SSLconfigs: ", !
-        do ##class(ITZOS.K8S.Utilities.SSLConfigs).Load(config.sslconfigs)
-    }
+        if '$ISOBJECT(handlers)
+        {
+            write "No handler found for node ",key," (skipped)",! 
+            continue
+        }
 
-    if $ISOBJECT(config.credentials)
-    {
-        write "Loading Credentials: ", !
-        do ##class(ITZOS.K8S.Utilities.Credentials).Load(config.credentials)
-    }
+        if (key = "monitoring") && 'setMonitorConfig
+        {
+            write "Skipping Monitoring",! 
+            continue
+        }
 
-    if $ISOBJECT(config.sqlconfigs)
-    {
-        write "Loading SQL Connections: ", !
-        do ##class(ITZOS.K8S.Utilities.SQLConnections).Load(config.sqlconfigs)
-    }
+        for index = 1:1:handlers.%Size()
+        {
+            set handlerClass = handlers.%Get(index - 1)
+            
+            write "Calling ",handlerClass," to deal with node ",key 
 
-    if $ISOBJECT(config.users)
-    {
-        write "Loading Users: ", !
-        do ##class(ITZOS.K8S.Utilities.Users).Create(config.users)
-    }
-
-    if $ISOBJECT(config.serviceregistries)
-    {
-        write "Loading service registry entries: ", !
-        do ##class(ITZOS.K8S.Utilities.ServiceRegistryEntries).Load(config.serviceregistries)
-    }
-
-    if $ISOBJECT(config."backup-config")
-    {
-        write "Loading Backup configuration: ", !
-        do ##class(ITZOS.K8S.Utilities.BackupConfig).Load(config."backup-config")
-    }
+            if $PARAMETER(handlerClass, "AfterInstallMode")  = "file"
+            {
+                write " passing file ",configmapFilename,": ",!
+                do $CLASSMETHOD(handlerClass, "LoadFile", configmapFilename)
+            }
+            else
+            {
+                write " passing node: ",!
+                do $CLASSMETHOD(handlerClass, "Load", value)
+            }
+        }
+	}
 }
 
+/// Handle one node of the configuration
+/// Description
 /// Get Registered After-inatall classes 
-ClassMethod GetAfterInstallHandlers()
+ClassMethod GetAfterInstallHandlers() As %DynamicObject
 {
-    set result = ##class(%SQL.Statement).%ExecDirect(, "Select parent, _Default from %Dictionary.ParameterDefinition where parent like ? and Name = 'AfterInstallNode' and sequencenumber < 3")
+    set result = ##class(%SQL.Statement).%ExecDirect(, "Select parent, _Default from %Dictionary.ParameterDefinition where Name = 'AfterInstallNode'")
 
     if result.%SQLCODE < 0
     {
-        throw ##class(%Exception.SQL).CreateFromSQLCODE(result.%SQLCODE,result.%Message)
+        write result.%Message,!
+        return {}
     }
+
+    set allHandlers = {}
 
     while result.%Next()
     {
-        write result.parent," handles ",result."_Default",!
+        #dim handlers as %DynamicArray = allHandlers.%Get(result."_Default")
+
+        if '$ISOBJECT(handlers)
+        {
+            set handlers = ##class(%DynamicArray).%New()
+            do allHandlers.%Set(result."_Default", handlers)
+        }
+
+        #; write "Adding handler ",result.parent," for ",result."_Default",":",!
+        do handlers.%Push(result.parent)
     }
+
+    return allHandlers
 }
 
 }
