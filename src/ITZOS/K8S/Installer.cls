@@ -65,10 +65,11 @@ XData Manifest [ XMLNamespace = INSTALLER ]
 <Manifest>
 	<Log Text="check if namespace ${Namespace} exists, if not create it" Level="0"/>
 	<If Condition='(##class(Config.Namespaces).Exists("${Namespace}")=0)'>
-		<Log Text="Creating Iris namespace ${Namespace}" Level="0"/>
-		<Namespace Name="${Namespace}" Create="yes" Code="${Namespace}" Data="${Namespace}" Ensemble="1">
+		<Log Text="Creating Iris namespace ${Namespace} with separate Code and Data files" Level="0"/>
+		<Namespace Name="${Namespace}" Create="yes" Code="${Namespace}_CODE" Data="${Namespace}_DATA" Ensemble="1">
 			<Configuration>
-				<Database Name="${Namespace}" Dir="${MGRDIR}${Namespace}" Create="yes" Resource="%DB_${Namespace}"/>
+				<Database Name="${Namespace}_CODE" Dir="${MGRDIR}${Namespace}_CODE" Create="yes" Resource="%DB_${Namespace}"/>
+				<Database Name="${Namespace}_DATA" Dir="${MGRDIR}${Namespace}_DATA" Create="yes" Resource="%DB_${Namespace}"/>
 				<ClassMapping Package="HS" From="HSLIB"/>
 				<ClassMapping Package="HSMOD" From="HSLIB"/>
 				<ClassMapping Package="ITZOS" From="USER"/><!-- for installer-->
