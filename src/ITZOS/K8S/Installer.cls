@@ -70,17 +70,8 @@ XData Manifest [ XMLNamespace = INSTALLER ]
 			<Configuration>
 				<Database Name="${Namespace}_CODE" Dir="${MGRDIR}${Namespace}_CODE" Create="yes" Resource="%DB_${Namespace}"/>
 				<Database Name="${Namespace}_DATA" Dir="${MGRDIR}${Namespace}_DATA" Create="yes" Resource="%DB_${Namespace}"/>
-				<ClassMapping Package="HS" From="HSLIB"/>
-				<ClassMapping Package="HSMOD" From="HSLIB"/>
 				<ClassMapping Package="ITZOS" From="USER"/><!-- for installer-->
 			</Configuration>
-
-			<Invoke Class="%ZHSLIB.HealthShareMgr" Method="EnableHealthShareNamespace" CheckStatus="true" >
-				<Arg Value="${Namespace}"/>
-				<Arg Value="0"/>
-				<Arg Value="1"/>
-				<Arg Value="1"/>
-			</Invoke>
 		</Namespace>
 	</If>
 </Manifest>
