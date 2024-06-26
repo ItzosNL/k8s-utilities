@@ -9,6 +9,8 @@ ClassMethod Install(namespace As %String = {..#Namespace})
 {
 	set sc = $$$OK
 
+	write "Using namespace '",namespace,": ",!
+
 	if '##class(ITZOS.K8S.Utilities.Namespace).NamespaceExists(namespace)
 	{
 		write "Creating namespace '",namespace,": ",!
