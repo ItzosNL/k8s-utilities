@@ -3,7 +3,7 @@ Class ITZOS.K8S.AfterInstall
 {
 
 /// Execute after-install actions
-ClassMethod ExecuteActions(configmapFilename As %String, setMonitorConfig As %Boolean = 0)
+ClassMethod ExecuteActions(configmapFilename As %String)
 {
     set config = {}.%FromJSONFile(configmapFilename)
     #dim allHandlers as %DynamicObject = ..GetAfterInstallHandlers()
@@ -20,9 +20,9 @@ ClassMethod ExecuteActions(configmapFilename As %String, setMonitorConfig As %Bo
             continue
         }
 
-        if (key = "monitoring") && 'setMonitorConfig
+        if (key = "monitoring") && 'value.enabled
         {
-            write "Skipping Monitoring",! 
+            write "Skipping Monitoring since it is not enabled",! 
             continue
         }
 
