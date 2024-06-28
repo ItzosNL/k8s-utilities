@@ -6,7 +6,7 @@ Class ITZOS.K8S.Utilities.Users
 Parameter AfterInstallNode = "users";
 
 /// Load all Users
-ClassMethod Load(users As %DynamicObject)
+ClassMethod Load(users As %DynamicArray)
 {
 	#dim iterator As %Iterator.Object = users.%GetIterator()
 	#dim user As %DynamicObject
