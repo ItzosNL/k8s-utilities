@@ -2,6 +2,16 @@
 Class ITZOS.K8S.AfterInstall
 {
 
+/// Load System default Settings and after-install.json from configMap
+ClassMethod LoadConfigmaps(configmapFolder As %String)
+{
+    do ##class(ITZOS.K8S.Utilities.DefaultSettings).Import(configmapFolder _ "/Ens.Config.DefaultSettings.esd")
+
+    write "Execute after-install actions based on the configmap:", !
+    do ..ExecuteActions(configmapFolder _ "/after-install.json")
+    write "Finished running after-install steps!",!
+}
+
 /// Execute after-install actions
 ClassMethod ExecuteActions(configmapFilename As %String)
 {
