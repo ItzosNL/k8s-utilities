@@ -93,6 +93,7 @@ ClassMethod GetLatestReleaseDescription(ownerAndRepo As %String = "ItzosNL/k8s-u
         catch ex
         {
             set sc = ex.AsStatus()
+            write "Exception when parsing reponse json: ",$System.Status.GetErrorText(sc),!
         }
     }
 
