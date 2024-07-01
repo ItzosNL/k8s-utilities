@@ -18,12 +18,13 @@ ClassMethod Load() As %Status
 	set httpRequest = ##class(%Net.HttpRequest).%New()
 	set httpRequest.Server = "pm.community.intersystems.com"
 	set httpRequest.SSLConfiguration = "Default"
+	set location = "/packages/zpm/latest/installer"
 
-	set sc = httpRequest.Get("/packages/zpm/latest/installer")
+	set sc = httpRequest.Get(location)
 
 	if $$$ISERR(sc)
 	{
-		Do $System.Status.DisplayError(sc)
+		write "Failed to open location https://",httpRequest.Server,location,": ",$System.Status.GetErrorText(sc),!
 		return sc
 	}
 
