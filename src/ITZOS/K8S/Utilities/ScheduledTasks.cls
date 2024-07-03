@@ -5,7 +5,8 @@ Class ITZOS.K8S.Utilities.ScheduledTasks
 /// Node from the after-install.config processed by this class.
 Parameter AfterInstallNode = "tasks";
 
-ClassMethod Test() As %Status
+/// Test load method
+ClassMethod Test()
 {
 	do ..Load([
         {
@@ -16,13 +17,13 @@ ClassMethod Test() As %Status
           "day": 2,
           "time": "02:00:00",
 		  "properties": {
-			"ExecuteCode": ("do ##class(MMLOGGINGPKG.BS.LoggingService).StartProcess(""ArchiveLastMonth"")")	
+			"ExecuteCode": "do ##class(MMLOGGINGPKG.BS.LoggingService).StartProcess(\"ArchiveLastMonth\")"	
 		  }
         }
       ])
 }
 
-/// Load SQLConnections from after-install.json
+/// Load ScheduledTasks from after-install.json
 ClassMethod Load(tasks As %DynamicObject)
 {
 	#dim iterator As %Iterator.Object = tasks.%GetIterator()
