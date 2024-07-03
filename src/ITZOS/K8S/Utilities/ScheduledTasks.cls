@@ -16,7 +16,7 @@ ClassMethod Test() As %Status
           "day": 2,
           "time": "02:00:00",
 		  "properties": {
-			"ExecuteCode": ("do ##class(MMLOGGINGPKG.BS.LoggingService).StartProcess(""ArchiveLastMonth"")")	
+			"ExecuteCode": "do ##class(MMLOGGINGPKG.BS.LoggingService).StartProcess(\"ArchiveLastMonth\")"	
 		  }
         }
       ])
