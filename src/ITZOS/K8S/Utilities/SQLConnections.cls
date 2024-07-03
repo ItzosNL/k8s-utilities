@@ -5,6 +5,29 @@ Class ITZOS.K8S.Utilities.SQLConnections
 /// Node from the after-install.config processed by this class.
 Parameter AfterInstallNode = "sqlconfigs";
 
+/// Test
+ClassMethod Test() As %Status
+{
+	do ..Load([
+        {
+          "name": "DWH-ESB",
+          "url": "jdbc:sqlserver://178.22.82.142:51444;databaseName=UniqESB;encrypt=true;trustServerCertificate=true",
+          "user": "ESB",
+          "password": "jdbc-dwh",
+          "classpath": "/tmp/mssql-jdbc-10.2.1.jre11.jar",
+          "driver": "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+        },
+        {
+          "name": "DWH-ESB-uit",
+          "url": "jdbc:sqlserver://178.22.82.142:51444;databaseName=UniqESB_uit;encrypt=true;trustServerCertificate=true",
+          "user": "ESB",
+          "password": "jdbc-dwh",
+          "classpath": "/tmp/mssql-jdbc-10.2.1.jre11.jar",
+          "driver": "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+        }
+      ])
+}
+
 /// Load SQLConnections from after-install.json
 ClassMethod Load(sqlconfigs As %DynamicObject)
 {
