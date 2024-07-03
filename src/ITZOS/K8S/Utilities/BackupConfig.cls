@@ -1,7 +1,7 @@
 Include %occOptions
 
 /// Create BackupConfig based on after-install.json
-Class ITZOS.K8S.Utilities.BackupConfig Extends ITZOS.K8S.Utilities.ScheduledTasks
+Class ITZOS.K8S.Utilities.BackupConfig
 {
 
 /// Node from the after-install.config processed by this class.
@@ -84,7 +84,7 @@ ClassMethod CreateTaskSchedule(backup As %DynamicObject) As %Status
 		set taskClass = "%SYS.Task.BackupCumulativeDatabaseList"
 	}
 
-	return ..Create(backup.name, "Create a " _ backup.type _ " backup", taskClass, { "Device": (backup.folder) }, backup.schema.type, backup.schema.time, backup.schema.day, "%SYS")
+	return ##class(ITZOS.K8S.Utilities.ScheduledTasks).CreateOrUpdateTaskSchedule(backup.name, "Create a " _ backup.type _ " backup", taskClass, { "Device": (backup.folder) }, backup.schema.type, backup.schema.time, backup.schema.day, "%SYS")
 }
 
 /// Update the specified standard Backup Task with the proper folder (property Device)
