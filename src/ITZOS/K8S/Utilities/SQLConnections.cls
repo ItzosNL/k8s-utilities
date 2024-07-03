@@ -6,7 +6,7 @@ Class ITZOS.K8S.Utilities.SQLConnections
 Parameter AfterInstallNode = "sqlconfigs";
 
 /// Test
-ClassMethod Test() As %Status
+ClassMethod Test()
 {
 	do ..Load([
         {
