@@ -1,5 +1,3 @@
-Include EnsConstants
-
 /// Get Settings from Production and Create DefaultSettings
 Class ITZOS.K8S.Utilities.DefaultSettings
 {
