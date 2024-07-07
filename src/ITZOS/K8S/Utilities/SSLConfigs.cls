@@ -1,5 +1,5 @@
 /// SSL Config Creation based on after-install.json
-Class ITZOS.K8S.Utilities.SSLConfigs
+Class ITZOS.K8S.Utilities.SSLConfigs Extends PathHelper
 {
 
 /// Node from the after-install.config processed by this class.
@@ -28,12 +28,7 @@ ClassMethod Load(sslconfigs As %DynamicObject)
 		
 		set keyPath = ..JoinPath(sslconfigs.certificatespath, sslconfig.key)
 		set caPath = ..JoinPath(sslconfigs.certificatespath, sslconfig.capath)
-		set sc = ..CreateSSLConfig(sslconfig.name, certPath, keyPath, caPath, sslconfig.cipherList)
-
-		if $$$ISERR(sc)
-		{
-			write "Failed to load SSL Config ",sslconfig.name,": ",$SYSTEM.Status.GetErrorText(sc),!
-		}
+		do ..CreateSSLConfig(sslconfig.name, certPath, keyPath, caPath, sslconfig.cipherList)
 	}
 }
 
@@ -61,37 +56,12 @@ ClassMethod CreateSSLConfig(name As %String, certPath As %String = "", keyPath A
 		set sc = ##class(Security.SSLConfigs).Modify(name, .props)
 	}
 
+	if $$$ISERR(sc)
+	{
+		write "Failed to load SSL Config ",name,": ",$SYSTEM.Status.GetErrorText(sc),!
+	}
+
 	return sc
-}
-
-/// Creates the SSL configurations specified in the configuration file, if any.
-/// Joins multiple parts of a filesystem path with the separator that is appropriate for the current operating system.
-/// We don't use %File:SubDirectoryName because it normalizes to a full path, which we may not want.
-ClassMethod JoinPath(parts... As %String) As %String
-{
-	if parts(2) = ""
-	{
-		return ""
-	}
-
-	; Determine separator to use. Only caters for Windows and
-	; Unix-like operating systems.
-	set separator = $Select($$$isWINDOWS: "\", 1: "/")
-	set path = parts(1)
-
-	for i = 2:1:parts
-	{
-		set part = $Get(parts(i))
-		
-		if $Extract(path, *) '= separator
-		{
-			set path = path _ separator
-		}
-
-		set path = path _ part
-	}
-	
-	return path
 }
 
 }
