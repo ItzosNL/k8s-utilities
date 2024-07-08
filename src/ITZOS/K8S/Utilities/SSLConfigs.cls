@@ -1,23 +1,104 @@
 /// SSL Config Creation based on after-install.json
-Class ITZOS.K8S.Utilities.SSLConfigs
+Class ITZOS.K8S.Utilities.SSLConfigs Extends PathHelper
 {
 
 /// Node from the after-install.config processed by this class.
 Parameter AfterInstallNode = "sslconfigs";
 
-/// Load SSLConfigs from after-install.json
-/// New structure with certificatespath inside sslconfigs
-ClassMethod Load(sslconfigs As %DynamicObject)
+/// Requires whole config
+Parameter AfterInstallMode = "all";
+
+/// Test the functionality
+ClassMethod Test()
 {
-	#dim iterator As %Iterator.Object = sslconfigs.configs.%GetIterator()
+	do ..Load({
+		"sslconfigs": {
+			"certificatespath": "/home/irisowner/certificates",
+			"configs": [
+					{
+						"name": "Ons Altrecht-dev",
+						"cert": "ONS-nedap-dev.pem",
+						"key": "ONS-nedap-dev.key"
+					}
+				]
+			}
+		}
+	)
+}
+
+/// Test the new layoutfunctionality
+ClassMethod TestNew()
+{
+	do ..Load(
+		{
+		"certificatespath": "/home/irisowner/certjes",
+		"sslconfigs": {
+			"Ons Altrecht-dev": {
+				"cert": "ONS-nedap-dev.pem",
+				"key": "ONS-nedap-dev.key"
+			},
+			"Ons Altrecht-staging": {
+				"cert": "ONS-nedap-staging.cer",
+				"key": "ONS-nedap-staging.key"
+			},
+			"Ons Altrecht-productie": {
+				"cert": "ONS-nedap-productie.pem",
+				"key": "ONS-nedap-productie.key"
+			},
+			"VektisAGBRegister": {
+				"cert": "vecozo.crt",
+				"key": "vecozo.key"
+			}
+		}
+		}
+	)
+}
+
+/// Load SSLConfigs from after-install.json
+/// Newest structure with global certificatespath
+ClassMethod Load(config As %DynamicObject)
+{
+	#dim sslconfigs As %DynamicObject = config.%Get(..#AfterInstallNode)
+	set certificatespath = config.certificatespath
+
+	if sslconfigs.certificatespath '= "" /// Overwrite with local setting!
+	{
+		set certificatespath = sslconfigs.certificatespath
+	}
+
+	if certificatespath = ""
+	{
+		write "Using certificatespath ",certificatespath,!
+	}
+	else
+	{
+		write "Warning: No setting certificatespath found within ",..#AfterInstallNode," or root",!
+	}
+
+	if $ISOBJECT(sslconfigs.configs)
+	{
+		set sslconfigs = sslconfigs.configs
+	}
+
+	#dim iterator As %Iterator.Object = sslconfigs.%GetIterator()
 	#dim sslconfig As %DynamicObject
 
-	while iterator.%GetNext(.key, .sslconfig)
+	while iterator.%GetNext(.name, .sslconfig)
 	{
-        write "Loading SSLconfig name: ",sslconfig.name,!
+		if name = "certificatespath"
+		{
+			continue
+		}
+
+		if (name = +name) // Old format has an array where the name is a separate property
+		{
+			set name = sslconfig.name
+		}
+
+        write "Loading SSLconfig name: ",name,!
 
 		; Certificate files must be specified pathless
-		set certPath = ..JoinPath(sslconfigs.certificatespath, sslconfig.cert)
+		set certPath = ..JoinPath(certificatespath, sslconfig.cert)
 
 		; If the certificate file doesn't exist, skip it if so configured
 		if '##class(%File).Exists(certPath)
@@ -26,14 +107,9 @@ ClassMethod Load(sslconfigs As %DynamicObject)
 			continue
 		}
 		
-		set keyPath = ..JoinPath(sslconfigs.certificatespath, sslconfig.key)
-		set caPath = ..JoinPath(sslconfigs.certificatespath, sslconfig.capath)
-		set sc = ..CreateSSLConfig(sslconfig.name, certPath, keyPath, caPath, sslconfig.cipherList)
-
-		if $$$ISERR(sc)
-		{
-			write "Failed to load SSL Config ",sslconfig.name,": ",$SYSTEM.Status.GetErrorText(sc),!
-		}
+		set keyPath = ..JoinPath(certificatespath, sslconfig.key)
+		set caPath = ..JoinPath(certificatespath, sslconfig.capath)
+		do ..CreateSSLConfig(name, certPath, keyPath, caPath, sslconfig.cipherList)
 	}
 }
 
@@ -61,37 +137,12 @@ ClassMethod CreateSSLConfig(name As %String, certPath As %String = "", keyPath A
 		set sc = ##class(Security.SSLConfigs).Modify(name, .props)
 	}
 
+	if $$$ISERR(sc)
+	{
+		write "Failed to load SSL Config ",name,": ",$SYSTEM.Status.GetErrorText(sc),!
+	}
+
 	return sc
-}
-
-/// Creates the SSL configurations specified in the configuration file, if any.
-/// Joins multiple parts of a filesystem path with the separator that is appropriate for the current operating system.
-/// We don't use %File:SubDirectoryName because it normalizes to a full path, which we may not want.
-ClassMethod JoinPath(parts... As %String) As %String
-{
-	if parts(2) = ""
-	{
-		return ""
-	}
-
-	; Determine separator to use. Only caters for Windows and
-	; Unix-like operating systems.
-	set separator = $Select($$$isWINDOWS: "\", 1: "/")
-	set path = parts(1)
-
-	for i = 2:1:parts
-	{
-		set part = $Get(parts(i))
-		
-		if $Extract(path, *) '= separator
-		{
-			set path = path _ separator
-		}
-
-		set path = path _ part
-	}
-	
-	return path
 }
 
 }
