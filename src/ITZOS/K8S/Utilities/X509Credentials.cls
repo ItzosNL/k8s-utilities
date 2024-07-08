@@ -5,42 +5,64 @@ Class ITZOS.K8S.Utilities.X509Credentials Extends PathHelper
 /// Node from the after-install.config processed by this class.
 Parameter AfterInstallNode = "x509Credentials";
 
+/// Requires whole config
+Parameter AfterInstallMode = "all";
+
 /// Test the functionality
 ClassMethod Test()
 {
 	do ..Load({
         "certificatespath": "/home/irisowner/certificates",
-		"credentials": [
-				{
-					"name": "dvza-preprod.healthexchange.nl",
-					"cert": "dvza-preprod.healthexchange.nl.cer",
-					"key": "dvza-preprod.healthexchange.nl.key",
-					"capath": ""
-				},
-				{
-					"name": "preprod-tvs-rd.dictu.nl",
-					"cert": "preprod-tvs-rd.dictu.nl.cer",
-					"key": "",
-					"capath": "preprod-tvs-rd.dictu.nl_chain.cer"
-				}
-			]
+		"x509Credentials": {
+			"dvza-preprod.healthexchange.nl": {
+				"cert": "dvza-preprod.healthexchange.nl.cer",
+				"key": "dvza-preprod.healthexchange.nl.key",
+				"capath": ""
+			},
+			"preprod-tvs-rd.dictu.nl": {
+				"cert": "preprod-tvs-rd.dictu.nl.cer",
+				"key": "",
+				"capath": "preprod-tvs-rd.dictu.nl_chain.cer"
+			}
 		}
+	}
 	)
 }
 
 /// Load X509Credentials from after-install.json
-/// Oops: the certificatespath is also inside sslconfigs...
-ClassMethod Load(x509Credentials As %DynamicObject)
+ClassMethod Load(config As %DynamicObject)
 {
-	#dim iterator As %Iterator.Object = x509Credentials.credentials.%GetIterator()
+	#dim x509Credentials As %DynamicObject = config.%Get(..#AfterInstallNode)
+	set certificatespath = config.certificatespath
+
+	if x509Credentials.certificatespath '= "" /// Overwrite with local setting!
+	{
+		set certificatespath = x509Credentials.certificatespath
+	}
+
+	if certificatespath = ""
+	{
+		write "Using certificatespath ",certificatespath,!
+	}
+	else
+	{
+		write "Warning: No setting certificatespath found within ",..#AfterInstallNode," or root",!
+	}
+
+	#dim iterator As %Iterator.Object = x509Credentials.%GetIterator()
 	#dim x509Credential As %DynamicObject
 
-	while iterator.%GetNext(.key, .x509Credential)
+	while iterator.%GetNext(.name, .x509Credential)
 	{
+		if name = "certificatespath"
+		{
+			continue
+		}
+
         write "Loading X509Credential name: ",x509Credential.name,!
 
 		; Certificate files must be specified pathless
-		set certPath = ..JoinPath(x509Credentials.certificatespath, x509Credential.cert)
+		set certPath = ..JoinPath(certificatespath, x509Credential.cert)
 
 		; If the certificate file doesn't exist, skip it if so configured
 		if '##class(%File).Exists(certPath)
@@ -49,10 +71,10 @@ ClassMethod Load(x509Credentials As %DynamicObject)
 			continue
 		}
 		
-		set keyPath = ..JoinPath(x509Credentials.certificatespath, x509Credential.key)
-		set caPath = ..JoinPath(x509Credentials.certificatespath, x509Credential.capath)
+		set keyPath = ..JoinPath(certificatespath, x509Credential.key)
+		set caPath = ..JoinPath(certificatespath, x509Credential.capath)
 
-		do ..CreateX509Credentials(x509Credential.name, certPath, keyPath, caPath)
+		do ..CreateX509Credentials(name, certPath, keyPath, caPath)
 	}
 }
 

@@ -47,6 +47,11 @@ ClassMethod ExecuteActions(configmapFilename As %String)
                 write " passing file ",configmapFilename,": ",!
                 do $CLASSMETHOD(handlerClass, "LoadFile", configmapFilename)
             }
+            elseif $PARAMETER(handlerClass, "AfterInstallMode")  = "all"
+            {
+                write " passing whole config: ",!
+                do $CLASSMETHOD(handlerClass, "Load", config)
+            }
             else
             {
                 write " passing node: ",!
