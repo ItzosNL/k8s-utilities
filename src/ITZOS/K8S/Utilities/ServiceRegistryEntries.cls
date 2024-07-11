@@ -5,6 +5,21 @@ Class ITZOS.K8S.Utilities.ServiceRegistryEntries
 /// Node from the after-install.config processed by this class.
 Parameter AfterInstallNode = "serviceregistries";
 
+/// Test
+ClassMethod Test()
+{
+	do ..Load([
+		{
+			"name": "FHIRService",
+			"host": "webgateway",
+			"url" : "/fhir/stu3",
+			"timeout": 120,
+			"sslconfig" : "Default",
+			"credentials": "Zivver"
+		}
+	])
+}
+
 /// Load all service registry entries
 ClassMethod Load(serviceregistries As %DynamicObject)
 {
@@ -13,17 +28,17 @@ ClassMethod Load(serviceregistries As %DynamicObject)
 
 	while iterator.%GetNext(.key, .entry)
 	{
-		do ..CreateOrUpdateEntry(entry.name, entry.host, entry.endpoint, entry.sslconfig)
+		do ..CreateOrUpdateEntry(entry.name, entry.host, entry.%Get("port", ""), entry.url, entry.sslconfig, entry.credentials, entry.%Get("timeout", 60))
 	}
 }
 
 /// Method used to create an entry during the after-install
-ClassMethod CreateOrUpdateEntry(name As %String, host As %String, endpoint As %String, sslconfig As %String)
+ClassMethod CreateOrUpdateEntry(name As %String, host As %String, port As %Integer = 443, url As %String, sslconfig As %String, credentials As %String, timeout As %Integer = 60)
 {
 	write "ServiceRegistry entry '",name,"': "
 
 	#dim service as HS.Registry.Service.HTTP
-    set id = ##class(HS.Registry.Service.Abstract).IDForNameType(name, "HTTP")
+    set id = ##class(HS.Registry.Service.HTTP).IDForNameType(name, "HTTP")
     
     if id '= ""
 	{
@@ -38,9 +53,13 @@ ClassMethod CreateOrUpdateEntry(name As %String, host As %String, endpoint As %S
 		set action = "create"
     }
 
+
+	set service.Timeout = timeout
     set service.Host = host
-    set service.URL = endpoint
+    set service.Port = port
+    set service.URL = url
     set service.SSLConfig = sslconfig
+    set service.HTTPCredentialsConfig = credentials
 
     set sc = service.%Save()
 
