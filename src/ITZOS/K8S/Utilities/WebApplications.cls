@@ -15,12 +15,12 @@ ClassMethod Load(webapplications As %DynamicObject)
 
 	while iterator.%GetNext(.key, .webapp)
 	{
-		do ..Create(webapp.url, , webapp.dispatchClass, webapp.role)
+		do ..Create(webapp.url, , webapp.dispatchClass, webapp.role, webapp.description)
 	}
 }
 
 /// Create web application
-ClassMethod Create(url As %String, namespace As %String = {$NAMESPACE}, dispatchClass As %String, role = {$$$AllRoleName}) As %Status
+ClassMethod Create(url As %String, namespace As %String = {$NAMESPACE}, dispatchClass As %String, role = {$$$AllRoleName}, description As %String = "") As %Status
 {
 	#dim sc As %Status = $$$OK
 
@@ -34,6 +34,7 @@ ClassMethod Create(url As %String, namespace As %String = {$NAMESPACE}, dispatch
 		set properties("IsNameSpaceDefault") = $$$NO
 		set properties("DispatchClass") = dispatchClass
 		set properties("MatchRoles") = ":" _ role
+		Set properties("Description") = description
 
 		if ('##class(Security.Applications).Exists(url))
 		{
