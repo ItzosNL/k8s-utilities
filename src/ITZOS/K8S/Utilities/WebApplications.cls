@@ -15,7 +15,7 @@ ClassMethod Load(webapplications As %DynamicObject)
 
 	while iterator.%GetNext(.key, .webapp)
 	{
-		do ..Create(webapp.url, , webapp.dispatchClass, webapp.role, webapp.description)
+		do ..Create(webapp.url, webapp.%Get("namespace", $NAMESPACE), webapp.dispatchClass, webapp.role, webapp.description)
 	}
 }
 
