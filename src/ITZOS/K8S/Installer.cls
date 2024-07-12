@@ -30,16 +30,19 @@ ClassMethod Prepare(namespace As %String)
 /// Installation - Finish in target namespace
 /// - Loads source package and compiles all classes
 /// - Autostarts production
-ClassMethod Finish(packageName As %String, productionName As %String = "")
+ClassMethod Finish(packageNames As %String, productionName As %String = "")
 {
-    write "Importing ",packageName," into namespace ",$NAMESPACE,": ",!
-
-    set sc = $System.OBJ.ImportDir("/tmp/src/" _ packageName, "*", "ck-d", , 1)    
-
-	if $$$ISERR(sc)
+	for index = 1:1:$LENGTH(packageNames, ",")
 	{
-		write "Loading package '",packageName,"' failed: ",$SYSTEM.Status.GetErrorText(sc),!
-		return
+		set packageName = $PIECE(packageNames, ",", index)
+		write "Importing ",packageName," into namespace ",$NAMESPACE,": ",!
+
+		set sc = $System.OBJ.ImportDir("/tmp/src/" _ packageName, "*", "ck-d", , 1)    
+
+		if $$$ISERR(sc)
+		{
+			write "Loading package '",packageName,"' failed: ",$SYSTEM.Status.GetErrorText(sc),!
+		}
 	}
 }
 
