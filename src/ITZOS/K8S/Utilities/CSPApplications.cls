@@ -69,6 +69,8 @@ ClassMethod Create(url As %String, namespace As %String = {$NAMESPACE}, director
 	catch ex
 	{
 		set sc = ex.AsStatus()
+
+        write "Exception in CSPApplications.Create: ",$SYSTEM.Status.GetErrorText(sc),!
 	}
 
 	return sc
