@@ -12,7 +12,7 @@ ClassMethod Test()
         {
           "%System/%Login/LoginFlailure": true,
           "LoginFailure": true,
-          "%System/%Login/JobStart": false
+          "%Login/JobStart": false
         }
       )
 }
@@ -39,6 +39,10 @@ ClassMethod Toggle(name As %String, enabled As %Boolean)
 	if $LENGTH(name, "/") = 1
 	{
 		set name = "%System/%Login/" _ name
+	}
+	elseif $LENGTH(name, "/") = 2
+	{
+		set name = "%System/" _ name
 	}
 
 	write "SystemAuditevent  '",name,"': "
