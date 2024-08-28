@@ -11,7 +11,7 @@ ClassMethod Test()
 	do ..Load(
         {
           "%System/%Login/LoginFlailure": true,
-          "%System/%Login/LoginFailure": true,
+          "LoginFailure": true,
           "%System/%Login/JobStart": false
         }
       )
@@ -35,6 +35,11 @@ ClassMethod Toggle(name As %String, enabled As %Boolean)
 	new $Namespace
 	set $Namespace = "%SYS"
 	set action = $CASE(enabled, 1:"enabled", :"disabled")
+
+	if $LENGTH(name, "/") = 1
+	{
+		set name = "%System/%Login/" _ name
+	}
 
 	write "SystemAuditevent  '",name,"': "
 
