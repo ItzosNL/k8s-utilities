@@ -35,9 +35,6 @@ ClassMethod Install(namespace As %String = {..#Namespace})
 
 	// This installs the intersystems-monitoring package
 	ZPM "install intersystems-monitoring"
-
-    write "Finish setting up MONITORING namespace: ",!
-	do ##class(IRISELK.Setup.installer).PostInstall()
 }
 
 /// Manifest Definition for Monitoring namespace
