@@ -7,6 +7,9 @@ ClassMethod LoadConfigmaps(configmapFolder As %String)
 {
     do ##class(ITZOS.K8S.Utilities.DefaultSettings).Import(configmapFolder _ "/Ens.Config.DefaultSettings.esd")
 
+    // we found out ZPM may be in disrepair, so we reload it 
+    do ##class(ITZOS.K8S.Utilities.ZPM).Load()
+
     write "Execute after-install actions based on the configmap:", !
     do ..ExecuteActions(configmapFolder _ "/after-install.json")
     write "Finished running after-install steps!",!
