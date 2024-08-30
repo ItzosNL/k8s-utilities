@@ -2,7 +2,7 @@
 Class ITZOS.K8S.Utilities.Namespace
 {
 
-/// ConfigAndStartMonitoring
+/// Does namespace exist?
 ClassMethod NamespaceExists(namespace As %String) As %Boolean
 {
 	new $NAMESPACE

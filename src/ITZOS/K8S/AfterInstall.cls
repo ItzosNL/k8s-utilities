@@ -19,6 +19,13 @@ ClassMethod LoadConfigmaps(configmapFolder As %String)
 ClassMethod ExecuteActions(configmapFilename As %String)
 {
     set config = {}.%FromJSONFile(configmapFilename)
+
+    if $ISOBJECT(config.monitoring)
+    {
+        // This check turns out to be necessary because we have seen outdated or none-existent package!
+        do ##class(ITZOS.K8S.InstallMonitoring).Check(config.monitoring)
+    }
+
     #dim allHandlers as %DynamicObject = ..GetAfterInstallHandlers()
 	#dim iterator As %Iterator.Object = config.%GetIterator()
 
@@ -30,12 +37,6 @@ ClassMethod ExecuteActions(configmapFilename As %String)
         if '$ISOBJECT(handlers)
         {
             write "No handler found for node ",key," (skipped)",! 
-            continue
-        }
-
-        if (key = "monitoring") && 'value.enabled
-        {
-            write "Skipping Monitoring since it is not enabled",! 
             continue
         }
 
