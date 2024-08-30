@@ -44,4 +44,39 @@ ClassMethod GetVersion() As %Status
 	}
 }
 
+/// Get current Version of specified package
+ClassMethod GetPackageVersion(namespace As %String, packageName As %String) As %String
+{
+	new $NAMESPACE
+	set $NAMESPACE = namespace
+	
+	#dim result as %SQL.StatementResult = ##class(%SQL.Statement).%ExecDirect(, "SELECT VersionString FROM %ZPM_PackageManager_Developer.""MODULE"" WHERE Name = ?", packageName)
+
+	if (result.%SQLCODE < 0)
+	{
+		throw ##class(%Exception.SQL).CreateFromSQLCODE(result.%SQLCODE,result.%Message)
+	}
+
+	if result.%Next()
+	{
+		return result.VersionString
+	}
+
+	return ""
+}
+
+/// Returns 0 if the current version is lower version than the target version
+ClassMethod IsVersionGreateOrEqual(current As %String, target As %String) As %Boolean
+{
+    if (current = target)
+    {
+        return 1
+    }
+
+    #dim currentSemver as %ZPM.PackageManager.Core.SemanticVersion = ##class(%ZPM.PackageManager.Core.SemanticVersion).FromString(current)
+    #dim targetSemver as %ZPM.PackageManager.Core.SemanticVersion = ##class(%ZPM.PackageManager.Core.SemanticVersion).FromString(target)
+
+    return currentSemver.Follows(targetSemver)
+}
+
 }
