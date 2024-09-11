@@ -10,26 +10,34 @@ Parameter AfterInstallNode = "backup-config";
 /// Test
 ClassMethod Test()
 {
+	#; "databases" : ["USER","IRISLIB","ALTRECHT_DATA"],
 	do ..Load({
-        "databases" : ["USER","IRISLIB","ALTRECHT"],
+        "databases" : ["USER","IRISLIB","ALTRECHT_DATA"],
+		"useArchiveOnDemand": true,
+		"email": {
+          "emailOnCompletion": "theo.stolker@intersystems.com",
+          "emailOnError": "theo.stolker@intersystems.com",
+          "openOutputFile": true,
+          "emailOutput": true
+        },	
         "fullBackup": {
           "name": "Itzos Weekly",
-          "folder": "/irissys/backups/FBU",
+          "folder": "/irissys/backups",
           "type": "full",
           "schema": {
               "type": "On Demand",
               "day": "mo",
-              "time": "01:00:00"
+              "time": "00:00:00"
           }
         },	
         "cumulativeBackup": {
           "name": "Itzos Daily",
-          "folder": "/irissys/backups/Cum",
+          "folder": "/irissys/backups",
           "type": "Cumulative",
           "schema": {
-              "type": "Weekly",
+              "type": "On Demand",
               "day": "tu,we,th,fr,sa,su",
-              "time": "2:00:00"
+              "time": "00:00:00"
           }
         }
       })
@@ -41,8 +49,8 @@ ClassMethod Load(backupconfig As %DynamicObject)
 	do ..AddDatabases(backupconfig.databases)
 	do ..UpdateSystemTasks("FullDBList", backupconfig.fullBackup.folder)
 	do ..UpdateSystemTasks("CumuIncrDBList", backupconfig.cumulativeBackup.folder)
-	do ..CreateTaskSchedule(backupconfig.fullBackup)
-	do ..CreateTaskSchedule(backupconfig.cumulativeBackup)
+	do ..CreateTaskSchedule(backupconfig.fullBackup, backupconfig.useArchiveOnDemand, backupconfig.email)
+	do ..CreateTaskSchedule(backupconfig.cumulativeBackup, backupconfig.useArchiveOnDemand, backupconfig.email)
 }
 
 /// Add databases
@@ -70,21 +78,42 @@ ClassMethod AddDatabases(databases As %DynamicArray)
 }
 
 /// Create Task Schedule
-ClassMethod CreateTaskSchedule(backup As %DynamicObject) As %Status
+ClassMethod CreateTaskSchedule(backup As %DynamicObject, useArchiveOnDemand As %Boolean, email As %DynamicObject) As %Status
 {
-	write "Task schedule for ",backup.name,":",!
+	write "Task schedule for ",backup.name
 
-	; System defined task classes
-	if $ZCONVERT(backup.type, "l") = "full"
+	if useArchiveOnDemand
 	{
-		set taskClass = "%SYS.Task.BackupFullDatabaseList"
+		write " using ArchiveOnDemand"
+		set namespace = $NAMESPACE
+
+		if $ZCONVERT(backup.type, "l") = "full"
+		{
+			set taskClass = "AODBackup.Full"
+		}
+		else
+		{
+			set taskClass = "AODBackup.Cumulative"
+		}
 	}
 	else
 	{
-		set taskClass = "%SYS.Task.BackupCumulativeDatabaseList"
+		set namespace = "%SYS"
+
+		; System defined task classes
+		if $ZCONVERT(backup.type, "l") = "full"
+		{
+			set taskClass = "%SYS.Task.BackupFullDatabaseList"
+		}
+		else
+		{
+			set taskClass = "%SYS.Task.BackupCumulativeDatabaseList"
+		}
 	}
 
-	return ##class(ITZOS.K8S.Utilities.ScheduledTasks).CreateOrUpdateTaskSchedule(backup.name, "Create a " _ backup.type _ " backup", taskClass, { "Device": (backup.folder) }, backup.schema.type, backup.schema.time, backup.schema.day, "%SYS")
+	write ":",!
+
+	return ##class(ITZOS.K8S.Utilities.ScheduledTasks).CreateOrUpdateTaskSchedule(backup.name, "Create a " _ backup.type _ " backup", taskClass, { "Device": (backup.folder) }, backup.schema.type, backup.schema.time, backup.schema.day, namespace, email)
 }
 
 /// Update the specified standard Backup Task with the proper folder (property Device)
