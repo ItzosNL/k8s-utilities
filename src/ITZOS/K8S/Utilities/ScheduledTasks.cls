@@ -8,19 +8,19 @@ Parameter AfterInstallNode = "tasks";
 /// Test load method
 ClassMethod Test()
 {
-	do ..Load([
-        {
-          "name": "Archiveer vorige maand",
-          "description": "Archiveer Aanleveringen en Logregels van vorige maand",
-          "taskClass": "%SYS.Task.RunLegacyTask",
-          "type": "Monthly",
-          "day": 2,
-          "time": "02:00:00",
-		  "properties": {
-			"ExecuteCode": "do ##class(MMLOGGINGPKG.BS.LoggingService).StartProcess(\"ArchiveLastMonth\")"	
-		  }
+	// ",joostplatenburg@itzos.com"
+
+	do ..Load([{
+			"name": "TestIOredirect",
+			"description": "Test werken van IO redirect bij teruggevene van een fout",
+			"taskClass": "AODBackup.TestIORedirect",
+			"type": "OnDemand",
+			"emailOnCompletion": "theo.stolker@intersystems.com",
+			"emailOnError": "theo.stolker@intersystems.com",
+			"openOutputFile": true,
+			"emailOutput": true
         }
-      ])
+	])
 }
 
 /// Load ScheduledTasks from after-install.json
@@ -31,18 +31,18 @@ ClassMethod Load(tasks As %DynamicObject)
 
 	while iterator.%GetNext(.key, .task)
 	{
-		do ..CreateOrUpdateTaskSchedule(task.name, task.description, task.taskClass, task.properties, task.type, task.time, task.day)
+		do ..CreateOrUpdateTaskSchedule(task.name, task.description, task.taskClass, task.properties, task.type, task.time, task.day, $NAMESPACE, task)
 	}
 }
 
 /// Create Legacy Task
-ClassMethod CreateLegayTask(name As %String, executeCode As %String, timingType As %String, startTime As %String, days As %String = "", namespace As %String = {$NAMESPACE}) As %Status
+ClassMethod CreateLegayTask(name As %String, executeCode As %String, timingType As %String, startTime As %String, days As %String = "", namespace As %String = {$NAMESPACE}, email As %DynamicObject = "") As %Status
 {
-	return ..CreateOrUpdateTaskSchedule(name, "Run " _ name, "%SYS.Task.RunLegacyTask", { "ExecuteCode": (executeCode) }, timingType, startTime, days, namespace)
+	return ..CreateOrUpdateTaskSchedule(name, "Run " _ name, "%SYS.Task.RunLegacyTask", { "ExecuteCode": (executeCode) }, timingType, startTime, days, namespace, email)
 }
 
 /// Create Or Update Task Schedule
-ClassMethod CreateOrUpdateTaskSchedule(name As %String, description As %String, taskClass As %String, properties As %DynamicObject, timingType As %String, startTime As %String, days As %String = "", namespace As %String = {$NAMESPACE}) As %Status
+ClassMethod CreateOrUpdateTaskSchedule(name As %String, description As %String, taskClass As %String, properties As %DynamicObject, timingType As %String, startTime As %String, days As %String = "", namespace As %String = {$NAMESPACE}, email As %DynamicObject = "") As %Status
 {
 	write "Creating task ",name,":",!
 
@@ -67,6 +67,11 @@ ClassMethod CreateOrUpdateTaskSchedule(name As %String, description As %String, 
 	do ..SetTaskTiming(task, timingType, startTime, days, .description)
 	set task.Description = description
 
+	if $ISOBJECT(email) // Set email flags!
+	{
+		do ..SetEmailOptions(task, email)
+	}
+
 	set sc = task.%Save()
 
 	if $$$ISERR(sc)
@@ -79,6 +84,30 @@ ClassMethod CreateOrUpdateTaskSchedule(name As %String, description As %String, 
 	}
 
 	return sc
+}
+
+/// Set email options
+ClassMethod SetEmailOptions(task As %SYS.Task, email As %DynamicObject)
+{
+	set task.EmailOnError = ..EmailAddressesToList(email.emailOnError)
+	set task.EmailOnCompletion = ..EmailAddressesToList(email.emailOnCompletion)
+	set task.EmailOutput = email.emailOutput
+	set task.OpenOutputFile = email.openOutputFile
+	set task.OutputDirectory = "" // Set to blank
+	set task.OutputFilename = ##class(%File).NormalizeFilename($ZSTRIP(task.Name, "*W") _ ".txt", ##class(%SYS.System).TempDirectory())
+}
+
+/// Transform Email addresses To a list
+ClassMethod EmailAddressesToList(addresses As %String) As %ListOfDataTypes
+{
+	set list = ##class(%ListOfDataTypes).%New()
+
+	for index = 1:1:$LENGTH(addresses, ",")
+	{
+		do list.Insert($PIECE(addresses, ",", index))
+	}
+
+	return list
 }
 
 /// Set Task timing and add to desription
