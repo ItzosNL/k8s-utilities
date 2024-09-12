@@ -27,8 +27,20 @@ ClassMethod Load(systemSecurityParameters As %DynamicObject)
 	new $namespace
 	set $namespace = "%SYS"
 
-	set props("PasswordExpirationDays") = systemSecurityParameters.passwordExpirationDays
-	set props("PasswordPattern") = systemSecurityParameters.passwordPattern
+	if systemSecurityParameters.passwordExpirationDays '= ""
+	{
+		set props("PasswordExpirationDays") = systemSecurityParameters.passwordExpirationDays
+	}
+
+	if (systemSecurityParameters.inactiveLimit '= "")
+	{
+		set props("InactiveLimit") = systemSecurityParameters.inactiveLimit
+	}
+
+	if (systemSecurityParameters.passwordPattern '= "")
+	{
+		set props("PasswordPattern") = systemSecurityParameters.passwordPattern
+	}
 
 	set sc = ##class(Security.System).Modify(,.props)
 
