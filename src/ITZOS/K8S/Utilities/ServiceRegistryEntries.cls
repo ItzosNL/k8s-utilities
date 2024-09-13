@@ -9,15 +9,13 @@ Parameter AfterInstallNode = "serviceregistries";
 ClassMethod Test()
 {
 	do ..Load([
-		{
-			"name": "FHIRService",
-			"host": "webgateway",
-			"url" : "/fhir/stu3",
-			"timeout": 120,
-			"sslconfig" : "Default",
-			"credentials": "Zivver"
-		}
-	])
+        {
+          "name": "mock-fhirserver-stu3",
+          "host": "tool-mock-fhirserver-stu3.hex-tools-o",
+          "url" : "/mock/fhir/1",
+          "port": 80
+        }
+      ])
 }
 
 /// Load all service registry entries
