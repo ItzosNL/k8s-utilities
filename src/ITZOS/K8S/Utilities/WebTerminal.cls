@@ -15,7 +15,7 @@ ClassMethod Load(active As %Boolean = 1)
 }
 
 /// Activate "webterminal"
-ClassMethod ActivateWebterminal()
+ClassMethod ActivateWebterminal() [ CodeMode = generator ]
 {
 	write "loading webterminal package:",!
 	zpm "install webterminal"
@@ -83,7 +83,7 @@ ClassMethod AssignAllRoleToWebterminalSocket()
 }
 
 /// Allow public read for resource %DB_{NAMESPACE}
-ClassMethod AllowPublicReadForResource() [ CodeMode = generator ]
+ClassMethod AllowPublicReadForResource()
 {
 	set resource = "%DB_" _ $NAMESPACE
 
