@@ -15,7 +15,7 @@ ClassMethod Load(active As %Boolean = 1)
 }
 
 /// Activate "webterminal"
-ClassMethod ActivateWebterminal() [ CodeMode = generator ]
+ClassMethod ActivateWebterminal()
 {
 	write "loading webterminal package:",!
 	zpm "install webterminal"
