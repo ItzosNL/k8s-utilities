@@ -129,18 +129,42 @@ ClassMethod SetTaskTiming(task As %SYS.Task, timingType As %String, startTime As
     else
     {
         set task.TimePeriodEvery = 1 	// Run every 1 day or week
-        set task.DailyFrequency = 0 	// Once
-        set task.DailyStartTime = $ZTIMEH(startTime, 1)
 
         if timingType = "Daily"
         {
-            set description = description _ " once every day at " _ startTime
-            set task.TimePeriod = 0
+			set task.TimePeriod = 0
+
+			if $LENGTH(startTime, ":") >= 2
+			{
+		        set task.DailyFrequency = 0 	// ONCE
+		        set task.DailyStartTime = $ZTIMEH(startTime, 1)
+				set description = description _ " once every day at " _ startTime
+			}
+			elseif $LENGTH(startTime, " ") = 2 // 5 minutes or 2 hours
+			{
+				set task.DailyFrequency = 1 	// SEVERAL
+		        set task.DailyStartTime = 0
+				set task.DailyIncrement = $PIECE(startTime, " ", 1) 
+				set type = $CASE($ZCONVERT($EXTRACT($PIECE(startTime, " ", 2)), "l"), "h": "hours", : "minutes")
+
+				set description = description _ " once every " _ task.DailyIncrement _ " " _ type
+
+				if type = "hours"
+				{
+					set task.DailyFrequencyTime = 1
+				}
+				else // minutes
+				{
+					set task.DailyFrequencyTime = 0
+				}
+			}
         }
         elseif timingType = "Weekly"
         {
             set description = description _ " once at " _ startTime _ " on every " _ days
             set task.TimePeriod = 1
+	        set task.DailyFrequency = 0 	// Once
+			set task.DailyStartTime = $ZTIMEH(startTime, 1)
         	set task.TimePeriodDay = ""
 
             for index = 1:1:$LENGTH(days, ",")
