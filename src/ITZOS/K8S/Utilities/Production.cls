@@ -14,20 +14,31 @@ ClassMethod Load(productionName As %String)
 /// Making a production Auto-Start in the current namespace
 ClassMethod AutoStartProduction(productionName As %String) As %Status
 {
-	// Only start production of not already running
-	if '##class(Ens.Director).IsProductionRunning()
+	// Stop current production
+	if ##class(Ens.Director).IsProductionRunning(.currentProduction)
 	{
-        write "Start Production ",productionName,": "
-		set sc = ##class(Ens.Director).StartProduction(productionName)
+		write "Stop Production ",currentProduction,": "
+		set sc = ##class(Ens.Director).StopProduction(0, 1)
 
 		if $$$ISERR(sc)
 		{
-			write " failed: ",$System.Status.GetErrorText(sc)
+			write " failed: ",$System.Status.GetErrorText(sc),!
 			return sc
 		}
+
+		write !
 	}
 
-    write "Make sure Production ",productionName," autostarts: "
+	write "Start Production ",productionName,": "
+	set sc = ##class(Ens.Director).StartProduction(productionName)
+
+	if $$$ISERR(sc)
+	{
+		write " failed: ",$System.Status.GetErrorText(sc),!
+		return sc
+	}
+
+    write !,"Make sure Production ",productionName," autostarts: "
 	set sc = ##class(Ens.Director).SetAutoStart(productionName)
 
 	if $$$ISERR(sc)
