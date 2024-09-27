@@ -35,7 +35,7 @@ ClassMethod Finish(packageNames As %String, productionName As %String = "")
 	for index = 1:1:$LENGTH(packageNames, ",")
 	{
 		set packageName = $PIECE(packageNames, ",", index)
-		write "Importing ",packageName," into namespace ",$NAMESPACE,": ",!
+		write "Importing ",packageName," into namespace ",$NAMESPACE,!
 
 		set sc = $System.OBJ.ImportDir("/tmp/src/" _ packageName, "*", "ck-d", , 1)    
 
