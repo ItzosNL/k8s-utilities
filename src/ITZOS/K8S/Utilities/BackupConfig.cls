@@ -12,7 +12,7 @@ ClassMethod Test()
 {
 	#; "databases" : ["USER","IRISLIB","ALTRECHT_DATA"],
 	do ..Load({
-        "databases" : ["USER","IRISLIB","ALTRECHT_DATA"],
+        "databases" : ["USER","ALTRECHT_DATA"],
 		"useArchiveOnDemand": true,
 		"email": {
           "emailOnCompletion": "theo.stolker@intersystems.com",

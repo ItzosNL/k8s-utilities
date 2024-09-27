@@ -68,13 +68,13 @@ ClassMethod Create(url As %String, namespace As %String = {$NAMESPACE}, dispatch
 
 		if ('##class(Security.Applications).Exists(url))
 		{
-			write "Creating WebApplication with url='",url,"' and dispatchClass'",dispatchClass,"'"
+			write "Creating WebApplication with url='",url,"' and dispatchClass='",dispatchClass,"'"
 
 			set sc = ##class(Security.Applications).Create(url, .properties)
 		}
 		else
 		{
-			write "Updating WebApplication with url='",url,"' and dispatchClass'",dispatchClass,"'"
+			write "Updating WebApplication with url='",url,"' and dispatchClass='",dispatchClass,"'"
 
 			set sc = ##class(Security.Applications).Modify(url, .properties)
 		}
