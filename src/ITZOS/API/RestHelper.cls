@@ -1,5 +1,3 @@
-Include Ensemble
-
 /// REST Helper routines
 Class ITZOS.API.RestHelper Extends (%REST.Impl, ITZOS.API.HTTPStatusHelper)
 {
