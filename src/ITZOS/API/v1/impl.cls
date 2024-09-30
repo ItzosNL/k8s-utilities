@@ -1,5 +1,3 @@
-Include EnsConstants
-
 /// Generic KPN/Itzos Beheer API<br/>
 /// Business logic class defined by OpenAPI in ITZOS.API.v1.spec<br/>
 /// Updated Sep 27, 2024 09:40:01
