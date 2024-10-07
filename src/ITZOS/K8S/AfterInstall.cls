@@ -5,13 +5,22 @@ Class ITZOS.K8S.AfterInstall
 /// Load System default Settings and after-install.json from configMap
 ClassMethod LoadConfigmaps(configmapFolder As %String)
 {
-    do ##class(ITZOS.K8S.Utilities.DefaultSettings).Import(configmapFolder _ "/Ens.Config.DefaultSettings.esd")
-
     // we found out ZPM may be in disrepair, so we reload it 
     do ##class(ITZOS.K8S.Utilities.ZPM).Load()
 
+    set configmapFilename = configmapFolder _ "/after-install.json"
+    #dim config as %DynamicObject = {}.%FromJSONFile(configmapFilename)
+
+    if config.systemdefaultspath = ""
+    {
+        // Original hard-coded path
+        set config.systemdefaultspath = configmapFolder _ "/Ens.Config.DefaultSettings.esd"
+    }
+
+    do ##class(ITZOS.K8S.Utilities.DefaultSettings).Import(config.systemdefaultspath)
+
     write "Execute after-install actions based on the configmap:", !
-    do ..ExecuteActions(configmapFolder _ "/after-install.json")
+    do ..ExecuteActions2(config, configmapFilename)
     write "Finished running after-install steps!",!
 }
 
@@ -19,7 +28,12 @@ ClassMethod LoadConfigmaps(configmapFolder As %String)
 ClassMethod ExecuteActions(configmapFilename As %String)
 {
     set config = {}.%FromJSONFile(configmapFilename)
+    do ..ExecuteActions2(config, configmapFilename)
+}
 
+/// Execute after-install actions version 2 - expects json as input
+ClassMethod ExecuteActions2(config As %DynamicObject, configmapFilename As %String)
+{
     if $ISOBJECT(config.monitoring)
     {
         // This check turns out to be necessary because we have seen outdated or none-existent package!
