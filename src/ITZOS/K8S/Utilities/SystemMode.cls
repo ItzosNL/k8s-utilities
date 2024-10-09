@@ -6,7 +6,7 @@ Class ITZOS.K8S.Utilities.SystemMode
 Parameter AfterInstallNode = "system-mode";
 
 /// Test
-ClassMethod Test() As %Status
+ClassMethod Test()
 {
     do ##class(ITZOS.K8S.AfterInstall).ExecuteActions2({
       "system-mode": "DEVELOPMENT"
