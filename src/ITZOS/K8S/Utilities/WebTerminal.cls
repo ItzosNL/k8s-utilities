@@ -6,7 +6,7 @@ Class ITZOS.K8S.Utilities.WebTerminal
 Parameter AfterInstallNode = "webterminal";
 
 /// Add "webterminal": true to after-install.json to load webterminal
-ClassMethod Load(active As %Boolean = 1)
+ClassMethod Load(active As %Boolean)
 {
 	if active
 	{

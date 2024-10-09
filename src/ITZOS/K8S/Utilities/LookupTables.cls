@@ -29,7 +29,7 @@ ClassMethod Test()
   })
 }
 
-/// Load SQLConnections from after-install.json
+/// Load Lookuptables from after-install.json
 ClassMethod Load(lookupTables As %DynamicObject)
 {
 	#dim iterator As %Iterator.Object = lookupTables.%GetIterator()

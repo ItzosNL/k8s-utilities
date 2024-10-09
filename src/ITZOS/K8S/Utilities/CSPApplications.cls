@@ -24,7 +24,7 @@ ClassMethod Test()
 }
 
 /// Load all cspapplications
-ClassMethod Load(cspapplications As %DynamicObject)
+ClassMethod Load(cspapplications As %DynamicArray)
 {
 	#dim iterator As %Iterator.Object = cspapplications.%GetIterator()
 	#dim cspapp As %DynamicObject

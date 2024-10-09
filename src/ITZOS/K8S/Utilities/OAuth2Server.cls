@@ -29,7 +29,7 @@ ClassMethod Test()
 }
 
 /// Creates/configures an OAuth2 Authorization server during after-install
-ClassMethod Load(oAuth2Server As %String)
+ClassMethod Load(oAuth2Server As %DynamicObject)
 {
 	do ..CreateOAuth2Server(
         oAuth2Server.description,

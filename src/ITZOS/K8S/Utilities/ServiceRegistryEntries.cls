@@ -19,7 +19,7 @@ ClassMethod Test()
 }
 
 /// Load all service registry entries
-ClassMethod Load(serviceregistries As %DynamicObject)
+ClassMethod Load(serviceregistries As %DynamicArray)
 {
 	#dim iterator As %Iterator.Object = serviceregistries.%GetIterator()
 	#dim entry As %DynamicObject

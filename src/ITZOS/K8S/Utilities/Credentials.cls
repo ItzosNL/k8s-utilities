@@ -6,7 +6,7 @@ Class ITZOS.K8S.Utilities.Credentials
 Parameter AfterInstallNode = "credentials";
 
 /// Load all Credentials
-ClassMethod Load(credentials As %DynamicObject)
+ClassMethod Load(credentials As %DynamicArray)
 {
 	#dim iterator As %Iterator.Object = credentials.%GetIterator()
 	#dim credential As %DynamicObject

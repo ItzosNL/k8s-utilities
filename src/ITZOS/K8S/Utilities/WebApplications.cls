@@ -33,7 +33,7 @@ ClassMethod Test()
 }
 
 /// Load all webapplications
-ClassMethod Load(webapplications As %DynamicObject)
+ClassMethod Load(webapplications As %DynamicArray)
 {
 	#dim iterator As %Iterator.Object = webapplications.%GetIterator()
 	#dim webapp As %DynamicObject
