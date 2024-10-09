@@ -29,7 +29,7 @@ ClassMethod Test()
 }
 
 /// Load SQLConnections from after-install.json
-ClassMethod Load(sqlconfigs As %DynamicObject)
+ClassMethod Load(sqlconfigs As %DynamicArray)
 {
 	#dim iterator As %Iterator.Object = sqlconfigs.%GetIterator()
 	#dim sqlconfig As %DynamicObject

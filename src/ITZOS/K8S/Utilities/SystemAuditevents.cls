@@ -18,7 +18,7 @@ ClassMethod Test()
 }
 
 /// Enable or Disable specified SystemAuditevents 
-ClassMethod Load(events As %DynamicArray)
+ClassMethod Load(events As %DynamicObject)
 {
 	#dim iterator As %Iterator.Object = events.%GetIterator()
 	#dim eventStatus As %DynamicObject

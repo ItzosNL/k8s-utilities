@@ -24,7 +24,7 @@ ClassMethod Test()
 }
 
 /// Load ScheduledTasks from after-install.json
-ClassMethod Load(tasks As %DynamicObject)
+ClassMethod Load(tasks As %DynamicArray)
 {
 	#dim iterator As %Iterator.Object = tasks.%GetIterator()
 	#dim task As %DynamicObject
