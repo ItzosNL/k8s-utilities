@@ -5,6 +5,12 @@ Class ITZOS.K8S.Utilities.Production
 /// Node from the after-install.config processed by this class.
 Parameter AfterInstallNode = "production";
 
+/// Test
+ClassMethod Test()
+{
+	do ..Load("MONDRIAAN.FoundationNonProduction")
+}
+
 /// Autostart production
 ClassMethod Load(productionName As %String)
 {
