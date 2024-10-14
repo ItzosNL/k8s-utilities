@@ -207,7 +207,7 @@ ClassMethod CreateErrorResponseForStatus(sc As %Status, message As %String = "")
         set error = message _ ": " _ error
     }
 
-    $$$LOGERROR(error)
+    #; $$$LOGERROR(error)
 
     if '..#ExposeServerExceptions
     {
