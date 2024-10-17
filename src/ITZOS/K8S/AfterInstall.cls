@@ -5,6 +5,8 @@ Class ITZOS.K8S.AfterInstall
 /// Load System default Settings and after-install.json from configMap
 ClassMethod LoadConfigmaps(configmapFolder As %String)
 {
+    do ##class(ITZOS.K8S.AfterInstall).MapITZOSPackagetoAll()
+
     // we found out ZPM may be in disrepair, so we reload it 
     do ##class(ITZOS.K8S.Utilities.ZPM).Load()
 
@@ -24,6 +26,16 @@ ClassMethod LoadConfigmaps(configmapFolder As %String)
     write "Finished running after-install steps!",!
 }
 
+/// Create package mapping for Itzos Package to %All namespace
+ClassMethod MapITZOSPackagetoAll() As %Status
+{
+    new $NAMESPACE
+    set $NAMESPACE = "USER"
+
+	do ##class(ITZOS.K8S.Utilities.Namespace).CreateALLNamespace()
+	do ##class(ITZOS.K8S.Utilities.Namespace).CreatePackageMappingToALL("ITZOS")
+}
+
 /// Execute after-install actions
 ClassMethod ExecuteActions(configmapFilename As %String)
 {
@@ -32,7 +44,7 @@ ClassMethod ExecuteActions(configmapFilename As %String)
 }
 
 /// Execute after-install actions version 2 - expects json as input
-ClassMethod ExecuteActions2(config As %DynamicObject, configmapFilename As %String)
+ClassMethod ExecuteActions2(config As %DynamicObject, configmapFilename As %String = "")
 {
     if $ISOBJECT(config.monitoring)
     {
@@ -59,13 +71,14 @@ ClassMethod ExecuteActions2(config As %DynamicObject, configmapFilename As %Stri
             set handlerClass = handlers.%Get(index - 1)
             
             write "Calling ",handlerClass," to deal with node ",key 
+            set afterInstallMode = $PARAMETER(handlerClass, "AfterInstallMode")
 
-            if $PARAMETER(handlerClass, "AfterInstallMode")  = "file"
+            if afterInstallMode = "file"
             {
                 write " passing file ",configmapFilename,": ",!
                 do $CLASSMETHOD(handlerClass, "LoadFile", configmapFilename)
             }
-            elseif $PARAMETER(handlerClass, "AfterInstallMode")  = "all"
+            elseif afterInstallMode = "all"
             {
                 write " passing whole config: ",!
                 do $CLASSMETHOD(handlerClass, "Load", config)

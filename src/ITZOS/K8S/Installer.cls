@@ -10,6 +10,8 @@ Class ITZOS.K8S.Installer
 /// - Loads ZPM
 ClassMethod Prepare(namespace As %String)
 {
+    do ##class(ITZOS.K8S.AfterInstall).MapITZOSPackagetoAll()
+
 	// execute first steps in User namespace
 	set vars("Namespace") = namespace
 	set sc = ..setup(.vars)

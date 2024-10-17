@@ -10,7 +10,7 @@ ClassMethod Test()
 {
     do ##class(ITZOS.K8S.AfterInstall).ExecuteActions2({
       "system-mode": "DEVELOPMENT"
-    }, "")
+    })
 }
 
 ClassMethod Load(systemMode As %String)

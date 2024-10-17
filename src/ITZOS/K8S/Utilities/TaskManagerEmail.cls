@@ -29,7 +29,8 @@ ClassMethod Test()
 ClassMethod Load(settings As %DynamicObject)
 {
 	// See https://docs.intersystems.com/irisforhealthlatest/csp/documatic/%25CSP.Documatic.cls?LIBRARY=%25SYS&CLASSNAME=%25SYS.Task.Config
-	
+
+	write "Load Task Manager email settings: "
 	do ##class(%SYS.Task.Config).EmailSet("Server", settings.server)
 	do ##class(%SYS.Task.Config).EmailSet("Port", settings.port)
 	do ##class(%SYS.Task.Config).EmailSet("SSLConfiguration", settings.sslconfig)
@@ -46,6 +47,8 @@ ClassMethod Load(settings As %DynamicObject)
 	if (settings.subjectFailure '= "") do ##class(%SYS.Task.Config).EmailSet("SubjectFailure", settings.subjectFailure)
 	if (settings.messageSuccess '= "") do ##class(%SYS.Task.Config).EmailSet("MessageSuccess", settings.messageSuccess)
 	if (settings.messageFailure '= "") do ##class(%SYS.Task.Config).EmailSet("MessageFailure", settings.messageFailure)
+
+	write "done",!
 }
 
 }

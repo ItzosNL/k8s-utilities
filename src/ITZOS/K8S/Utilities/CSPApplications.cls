@@ -8,19 +8,21 @@ Parameter AfterInstallNode = "cspapplications";
 /// Test
 ClassMethod Test()
 {
-    do ..Load([
-        {
-          "url": "/medmij",
-          "directory": "/tmp/csp/medmij",
-          "resource": "",
-          "authenticationMethods": 64,
-          "grant": "%All",
-          "description": "",
-          "cookiePath": "/medmij/",
-          "recurse": true,
-          "autoCompile": true
-        }
-    ])
+    do ##class(ITZOS.K8S.AfterInstall).ExecuteActions2({
+        "cspapplications": [
+            {
+                "url": "/medmij",
+                "directory": "/tmp/csp/medmij",
+                "resource": "",
+                "authenticationMethods": 64,
+                "grant": "%All",
+                "description": "",
+                "cookiePath": "/medmij/",
+                "recurse": true,
+                "autoCompile": true
+            }
+        ]
+    })
 }
 
 /// Load all cspapplications
