@@ -8,20 +8,22 @@ Parameter AfterInstallNode = "taskManagerEmail";
 /// Test
 ClassMethod Test()
 {
-	do ..Load({
-		"server": "smtp.healthexchange.nl",
-		"port": 25,
-		"sslconfig": "Default",
-		"useStartTLS": true,
-		"authUser": "",
-		"authPassword": "",
-		"timezone": "",
-		"replyTo": "noreply.esb-altrecht-o@healthexchange.nl",
-		"sender": "noreply.esb-altrecht-o@healthexchange.nl",
-		"subjectSuccess": "Scheduler process #(NAME)# - #(SUCCESS)#",
-		"subjectFailure": "Scheduler process #(NAME)# - #(SUCCESS)#",
-		"messageSuccess": "Scheduler process #(NAME)# - Scheduled for #(SCHEDULED)# on #(SERVER)#:#(INSTANCE)#, #(SUCCESS)# executing Code #(TASKCLASS)# at #(LASTFINISHED)# was successful!",
-		"messageFailure": "Scheduler process #(NAME)# - Scheduled for #(SCHEDULED)# on #(SERVER)#:#(INSTANCE)#, #(SUCCESS)# executing Code #(TASKCLASS)# at #(LASTFINISHED)# met resultaat #(ERROR)#\r\n\r\n#(STATUS)#"
+	do ##class(ITZOS.K8S.AfterInstall).ExecuteActions2({
+ 		"taskManagerEmail": {
+			"server": "smtp.healthexchange.nl",
+			"port": 25,
+			"sslconfig": "Default",
+			"useStartTLS": true,
+			"authUser": "",
+			"authPassword": "",
+			"timezone": "",
+			"replyTo": "noreply.esb-altrecht-o@healthexchange.nl",
+			"sender": "noreply.esb-altrecht-o@healthexchange.nl",
+			"subjectSuccess": "Scheduler process #(NAME)# - #(SUCCESS)#",
+			"subjectFailure": "Scheduler process #(NAME)# - #(SUCCESS)#",
+			"messageSuccess": "Scheduler process #(NAME)# - Scheduled for #(SCHEDULED)# on #(SERVER)#:#(INSTANCE)#, #(SUCCESS)# executing Code #(TASKCLASS)# at #(LASTFINISHED)# was successful!",
+			"messageFailure": "Scheduler process #(NAME)# - Scheduled for #(SCHEDULED)# on #(SERVER)#:#(INSTANCE)#, #(SUCCESS)# executing Code #(TASKCLASS)# at #(LASTFINISHED)# met resultaat #(ERROR)#\r\n\r\n#(STATUS)#"
+		}
 	})
 }
 

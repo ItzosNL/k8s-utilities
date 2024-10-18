@@ -15,16 +15,19 @@ ClassMethod Test()
 {
 	#; Adding "IRISLIB" as database will cause a warning in th backup because it is a readonly database
 	do ##class(ITZOS.K8S.AfterInstall).ExecuteActions2({
-       "packages": {
-          "AODBackup": {
-              "namespace": "AODBackup",
-              "owner": "ItzosNL",
-              "repo": "k8s-archiveonline-backup",
-              "config": {
-                "folder": "mmlogging-o/"
-              }
-            }
-        },
+		"packages": {
+			"AODBackup": {
+			  "namespace": "AODBackup",
+			  "owner": "ItzosNL",
+			  "repo": "k8s-archiveonline-backup",
+			  "config": {
+				"bucket": "ehealth-iris-bu",
+				"folder": "mmlogging-o/",
+				"access-key": "ZWhlYWx0aC1pcmlzLWJ1",
+				"access-secret": "mkls-aodbackup"
+				}
+			}
+		},
 		"backup-config": {
           	"databases" : [
 			    "MMLOGGING_DATA"
