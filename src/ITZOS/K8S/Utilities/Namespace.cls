@@ -8,8 +8,16 @@ Class ITZOS.K8S.Utilities.Namespace
 Parameter AfterInstallNode = "namespace";
 
 /// Please ignore and log no warning
-Parameter AfterInstallMode = "skip";
+Parameter AfterInstallMode = "display-only";
 
+/// Display the value found
+ClassMethod Display(value As %String) As %Status
+{
+	if value '= $NAMESPACE
+	{
+	    write "Namespace mismatch: configured=",value," but running in ",$NAMESPACE,!
+	}
+}
 /// Does namespace exist?
 ClassMethod NamespaceExists(namespace As %String) As %Boolean
 {
