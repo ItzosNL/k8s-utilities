@@ -4,6 +4,12 @@ Include %occErrors
 Class ITZOS.K8S.Utilities.Namespace
 {
 
+/// Node from the after-install.config processed by this class.
+Parameter AfterInstallNode = "namespace";
+
+/// Please ignore and log no warning
+Parameter AfterInstallMode = "skip";
+
 /// Does namespace exist?
 ClassMethod NamespaceExists(namespace As %String) As %Boolean
 {

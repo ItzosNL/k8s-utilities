@@ -70,8 +70,19 @@ ClassMethod ExecuteActions2(config As %DynamicObject, configmapFilename As %Stri
         {
             set handlerClass = handlers.%Get(index - 1)
             
-            write "Calling ",handlerClass," to deal with node ",key 
             set afterInstallMode = $PARAMETER(handlerClass, "AfterInstallMode")
+            if afterInstallMode = "skip"
+            {
+                continue // skip!
+            }
+
+            if afterInstallMode = "display-only"
+            {
+                do $CLASSMETHOD(handlerClass, "Display", value)
+                continue
+            }
+
+            write "Calling ",handlerClass," to deal with node ",key 
 
             if afterInstallMode = "file"
             {
