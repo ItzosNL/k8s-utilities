@@ -15,13 +15,15 @@ ClassMethod Test()
 			"databasename": "REMOTE_DATABASE",
 			"remoteserver": "IRIS-0",
 			"directory": "/irissys/data/IRIS/mgr/MMLOGGING_DATA/",
-			"globalmapping": {
-				"namespace": "MMLOGGING",
-				"globalnames": [
-					"MMLOGGINGPKG.DB.Aanlevering*",
-					"MMLOGGINGPKG.DB.Logregel*"
-				]
-			}
+			"globalmapping": [
+				{
+					"namespace": "MMLOGGING",
+					"globalnames": [
+						"MMLOGGINGPKG.DB.Aanlevering*",
+						"MMLOGGINGPKG.DB.Logregel*"
+					]
+				}
+			]
 		}
 	})
 }
@@ -31,11 +33,16 @@ ClassMethod Load(db As %DynamicArray)
 {
 	do ..CreateRemoteDB(db.databasename, db.remoteserver, db.directory)
 
-	#dim iterator As %Iterator.Object = db.globalmapping.globalnames.%GetIterator()
+	#dim iterator As %Iterator.Object = db.globalmapping.%GetIterator()
 
-	while iterator.%GetNext(, .global)
+	while iterator.%GetNext(, .globalmapping)
 	{
-		do ..CreateOrUpdateGlobalMapping(db.globalmapping.namespace, global, db.databasename)
+		#dim iterator2 As %Iterator.Object = globalmapping.globalnames.%GetIterator()
+
+		while iterator2.%GetNext(, .global)
+		{
+			do ..CreateOrUpdateGlobalMapping(globalmapping.namespace, global, db.databasename)
+		}
 	}
 }
 
