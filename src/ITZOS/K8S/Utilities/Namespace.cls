@@ -4,6 +4,21 @@ Include %occErrors
 Class ITZOS.K8S.Utilities.Namespace
 {
 
+/// Node from the after-install.config processed by this class.
+Parameter AfterInstallNode = "namespace";
+
+/// Please ignore and log no warning
+Parameter AfterInstallMode = "display-only";
+
+/// Display the value found
+ClassMethod Display(value As %String) As %Status
+{
+	if value '= $NAMESPACE
+	{
+	    write "WARNING: Namespace mismatch: Configured=",value," but running in ",$NAMESPACE,!
+	}
+}
+
 /// Does namespace exist?
 ClassMethod NamespaceExists(namespace As %String) As %Boolean
 {
