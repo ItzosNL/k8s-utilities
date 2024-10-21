@@ -15,9 +15,10 @@ ClassMethod Display(value As %String) As %Status
 {
 	if value '= $NAMESPACE
 	{
-	    write "Namespace mismatch: configured=",value," but running in ",$NAMESPACE,!
+	    write "WARNING: Namespace mismatch: Configured=",value," but running in ",$NAMESPACE,!
 	}
 }
+
 /// Does namespace exist?
 ClassMethod NamespaceExists(namespace As %String) As %Boolean
 {
