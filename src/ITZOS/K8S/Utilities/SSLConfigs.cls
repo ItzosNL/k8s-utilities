@@ -109,6 +109,12 @@ ClassMethod Load(config As %DynamicObject)
 	}
 }
 
+/// Create SSL Config named Default
+ClassMethod CreateDefault() As %Status
+{
+	return ..CreateSSLConfig("Default")
+}
+
 /// Create the SSL configuration
 ClassMethod CreateSSLConfig(name As %String, certPath As %String = "", keyPath As %String = "", caPath As %String = "", cipherList As %String = "") As %Status
 {
