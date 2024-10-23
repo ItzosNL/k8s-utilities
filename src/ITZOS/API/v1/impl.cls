@@ -1,6 +1,5 @@
 /// Generic KPN/Itzos Beheer API<br/>
 /// Business logic class defined by OpenAPI in ITZOS.API.v1.spec<br/>
-/// Updated Sep 27, 2024 09:40:01
 Class ITZOS.API.v1.impl Extends ITZOS.API.RestHelper [ ProcedureBlock ]
 {
 
@@ -194,6 +193,28 @@ ClassMethod ListJobs()
 	while tRS.%Next(.tStatus)
 	{
 		w tRS.Job,", ",tRS.ConfigName,!
+	}
+}
+
+/// Get the backup history, latest backup first<br/>
+/// The method arguments hold values for:<br/>
+///     maxage, Maximum age in days; default is 30, 'all' will include all<br/>
+ClassMethod GetBackupHistory(maxage As %String) As %DynamicObject
+{
+	try
+	{
+		#dim backups As %DynamicArray = ##class(ITZOS.K8S.Utilities.BackupHistory).GetPage($GET(maxage, 30))
+
+		set response = {
+			"code": 200,
+			"backups": (backups)
+		}
+
+		return ..ReturnJSON(response)
+	}
+	catch ex
+	{
+	    return ..ReturnJSON(..CreateErrorResponseForStatus(ex.AsStatus()), 500)
 	}
 }
 

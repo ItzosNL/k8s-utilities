@@ -10,6 +10,7 @@ Class ITZOS.API.Fixer Extends %Projection.AbstractProjection
 /// - Fix calls directly to %REST.Impl in dispatch methods
 ClassMethod CreateProjection(className As %String, ByRef parameters As %String, modified As %String, qstruct) As %Status
 {
+	write !,"Cleaning generated code: "
 	set dispName = $$$ClassPackageName(className)_".disp"
 	set implName = $$$ClassPackageName(className)_".impl"
 	
@@ -127,6 +128,8 @@ ClassMethod BuildStatus(sc As %Status = "", message As %String, args... As %Stri
          Set msgStatus = $System.Status.AppendStatus(msgStatus, sc)
     }
 	
+	write $SYSTEM.Status.GetErrorText(sc),!
+
 	return msgStatus
 }
 
