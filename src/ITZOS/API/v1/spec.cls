@@ -32,8 +32,12 @@ XData OpenAPI [ MimeType = application/json ]
             "description": "Various endpoints"
         },
         {
+            "name": "Backup",
+            "description": "Backup related endpoints"
+        },
+        {
             "name": "Eventlog",
-            "description": "Services voor het ophalen van de eventlog."
+            "description": "Endpoints voor het ophalen van de eventlog."
         }
     ],
     "securityDefinitions": {
@@ -127,6 +131,47 @@ XData OpenAPI [ MimeType = application/json ]
                     }
                 }
 		    }
+	    },
+	    "/backups":{
+		    "get": {
+			    "tags": [
+			    	"Backups"
+			    ],
+                "x-ISC_CORS": true,
+                "summary": "Get the backup history, latest backup first",
+                "operationId": "GetBackupHistory",
+                "consumes": [],
+                "produces": [
+                    "application/json"
+                ],
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "maxage",
+                        "in": "query",
+                        "type": "string",
+                        "description": "Maximum age in days; default is 30, 'all' will include all"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/GetBackupHistoryResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ApiResponse"
+                        }
+                    }
+                }
+		    }
 	    }
     },
     "definitions": {
@@ -186,6 +231,71 @@ XData OpenAPI [ MimeType = application/json ]
                 }
             },
             "additionalProperties": false
+        },
+        "GetBackupHistoryResponse": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/ApiResponse"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "backups": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Backup"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "Backup": {
+            "type": "object",
+            "properties": {
+                "datetime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "File Timestamp (ISO)",
+                    "example": "2024-09-10T10:28:04Z"
+                },
+                "age": {
+                    "type": "number",
+                    "description": "Age of the backup in days"
+                },
+                "butype": {
+                    "type": "string",
+                    "description": "Type of backup (full or cumulative)"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "Status of the backup (completed or warning)"
+                },
+                "logfile": {
+                    "type": "string",
+                    "description": "Name of the logfile"
+                },
+                "logfile-status": {
+                    "type": "string",
+                    "description": "Status of the logfile (present, compressed or absent)"
+                },
+                "backupfile": {
+                    "type": "string",
+                    "description": "Name of the backupfile"
+                },
+                "backupfile-status": {
+                    "type": "string",
+                    "description": "Status of the backupfile (present, compressed or absent)"
+                },
+                "journalfile": {
+                    "type": "string",
+                    "description": "Name of the journalfile"
+                },
+                "journalfile-status": {
+                    "type": "string",
+                    "description": "Status of the journalfile (present, compressed or absent)"
+                }
+            }
         },
         "ApiResponse": {
             "type": "object",
