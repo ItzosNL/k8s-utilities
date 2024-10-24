@@ -22,15 +22,15 @@ ClassMethod Test()
 			  "repo": "k8s-archiveonline-backup",
 			  "config": {
 				"bucket": "ehealth-iris-bu",
-				"folder": "mmlogging-o/",
+				"folder": "altrecht-o/",
 				"access-key": "ZWhlYWx0aC1pcmlzLWJ1",
-				"access-secret": "mkls-aodbackup"
+				"access-secret": "aodbackup"
 				}
 			}
 		},
 		"backup-config": {
           	"databases" : [
-			    "MMLOGGING_DATA"
+			    "ALTRECHT_DATA"
 			],
 			"email": {
 				"emailOnCompletion": "theo.stolker@intersystems.com",

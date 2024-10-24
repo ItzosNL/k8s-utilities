@@ -48,28 +48,13 @@ ClassMethod TestNew()
 		"certificatespath": "/home/irisowner/certificates",
 		"sslconfigs": [
 			{
-				"name": "Ons Altrecht-dev",
-				"cert": "ONS-nedap-dev.pem",
-				"key": "ONS-nedap-dev.key"
-			},
-			{
-				"name": "Ons Altrecht-staging",
-				"cert": "ONS-nedap-staging.cer",
-				"key": "ONS-nedap-staging.key"
-			},
-			{
-				"name": "Ons Altrecht-productie",
-				"cert": "ONS-nedap-productie.pem",
-				"key": "ONS-nedap-productie.key"
-			},
-			{
-				"name": "VektisAGBRegister",
-				"cert": "vecozo.crt",
-				"key": "vecozo.key"
+				"name": "dvza-preprod.healthexchange.nl",
+				"cert": "dvza-preprod.healthexchange.nl.cer",
+				"key": "dvza-preprod.healthexchange.nl.key",
+				"cipherList": "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384"
 			}
 		]
-		}
-	)
+	})
 }
 
 /// Load SSLConfigs from after-install.json
