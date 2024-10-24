@@ -287,6 +287,11 @@ XData OpenAPI [ MimeType = application/json ]
                     "type": "string",
                     "description": "Status of the backupfile (present, compressed or absent)"
                 },
+                "backupfile-size": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "Size of the backupfile when present or compressed"
+                },
                 "journalfile": {
                     "type": "string",
                     "description": "Name of the journalfile"

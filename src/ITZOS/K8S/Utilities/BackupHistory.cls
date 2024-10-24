@@ -51,6 +51,14 @@ Method BackupFileStatusGet() As %String
     return ..FileStatus(..BackupFile)
 }
 
+/// Size of the BackupFile when status is present or compressed
+Property BackupFileSize As %Integer(%JSONFIELDNAME = "backupfile-size") [ Calculated, Transient ];
+
+Method BackupFileSizeGet() As %Integer
+{
+    return ..FileSize(..BackupFile)
+}
+
 /// JOURNAL=/irissys/journal1/20240905.001
 /// Journal file that was used as the basis for the backup
 Property JournalFile As %String(%JSONFIELDNAME = "journalfile", MAXLEN = "");
@@ -88,6 +96,24 @@ ClassMethod FileStatus(filename As %String) As %String
     }
 
     return "absent"
+}
+
+/// Get File Status as string (compressed/present/absent
+ClassMethod FileSize(filename As %String) As %Integer
+{
+    if ##class(%File).Exists(filename)
+    {
+        return ##class(%File).GetFileSize(filename)
+    }
+
+    set filename = filename _ ".gz"
+
+    if ##class(%File).Exists(filename)
+    {
+        return ##class(%File).GetFileSize(filename)
+    }
+
+    return ""
 }
 
 /// Get the Latest Full backup
