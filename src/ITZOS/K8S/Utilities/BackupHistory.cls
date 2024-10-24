@@ -68,7 +68,7 @@ Property JournalFileStatus As %String(%JSONFIELDNAME = "journalfile-status") [ C
 
 Method JournalFileStatusGet() As %String
 {
-    return ..FileStatus(..JournalFile)
+    return ..FileStatus(..JournalFile, "z")
 }
 
 /// LIST=List
@@ -81,7 +81,7 @@ Property List As %String(%JSONINCLUDE = "NONE", MAXLEN = "");
 Property WIJInformation As %String(%JSONINCLUDE = "NONE", MAXLEN = "");
 
 /// Get File Status as string (compressed/present/absent
-ClassMethod FileStatus(filename As %String) As %String
+ClassMethod FileStatus(filename As %String, compressedExtension As %String = ".gz") As %String
 {
     #; return ##class(%File).GetFileSize(file)
 
@@ -90,7 +90,7 @@ ClassMethod FileStatus(filename As %String) As %String
         return "present"
     }
 
-    if ##class(%File).Exists(filename _ ".gz")
+    if ##class(%File).Exists(filename _ compressedExtension)
     {
         return "compressed"
     }
