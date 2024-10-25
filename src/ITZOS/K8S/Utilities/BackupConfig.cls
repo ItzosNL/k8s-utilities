@@ -15,50 +15,50 @@ ClassMethod Test()
 {
 	#; Adding "IRISLIB" as database will cause a warning in th backup because it is a readonly database
 	do ##class(ITZOS.K8S.AfterInstall).ExecuteActions2({
-		"packages": {
-			"AODBackup": {
-			  "namespace": "AODBackup",
-			  "owner": "ItzosNL",
-			  "repo": "k8s-archiveonline-backup",
-			  "config": {
-				"bucket": "ehealth-iris-bu",
-				"folder": "altrecht-o/",
-				"access-key": "ZWhlYWx0aC1pcmlzLWJ1",
-				"access-secret": "aodbackup"
-				}
-			}
-		},
-		"backup-config": {
-          	"databases" : [
-			    "ALTRECHT_DATA"
-			],
-			"email": {
-				"emailOnCompletion": "theo.stolker@intersystems.com",
-				"emailOnError": "theo.stolker@intersystems.com",
-				"openOutputFile": true,
-				"emailOutput": true
-			},	
-			"fullBackup": {
-				"name": "Itzos Weekly",
-				"folder": "/irissys/backups",
-				"type": "full",
-				"schema": {
-					"type": "Weekly",
-					"day": "tu",
-					"time": "06:00:00"
-				}
-			},	
-			"cumulativeBackup": {
-				"name": "Itzos Daily",
-				"folder": "/irissys/backups",
-				"type": "Cumulative",
-				"schema": {
-					"type": "Weekly",
-					"day": "mo,we,th,fr",
-					"time": "06:00:00"
-				}
-			}
-		}
+      "packages": {
+        "AODBackup": {
+          "namespace": "AODBackup",
+          "owner": "ItzosNL",
+          "repo": "k8s-archiveonline-backup",
+          "config": {
+            "bucket": "ehealth-iris-bu",
+            "folder": "altrecht-a/",
+            "access-key": "ZWhlYWx0aC1pcmlzLWJ1",
+            "access-secret": "aodbackup"
+          }
+        }
+      },
+      "backup-config": {
+        #; "databases" : [
+        #;   "ALTRECHT"
+        #; ],
+        "email": {
+          "emailOnCompletion": "theo.stolker@intersystems.com",
+          "emailOnError": "theo.stolker@intersystems.com",
+          "openOutputFile": true,
+          "emailOutput": true
+        },	
+        "fullBackup": {
+          "name": "Itzos Weekly",
+          "folder": "/irissys/backups",
+          "type": "full",
+          "schema": {
+              "type": "On Demand",
+              "day": "tu",
+              "time": "06:00:00"
+          }
+        },	
+        "cumulativeBackup": {
+          "name": "Itzos Daily",
+          "folder": "/irissys/backups",
+          "type": "Cumulative",
+          "schema": {
+              "type": "On Demand",
+              "day": "mo,we,th,fr",
+              "time": "06:00:00"
+          }
+        }
+      }
 	})
 }
 
@@ -67,7 +67,12 @@ ClassMethod Load(config As %DynamicObject)
 {
 	set backupconfig = config."backup-config"
 
-	do ..AddDatabases(backupconfig.databases)
+	if (backupconfig.databases = "") || (..AddDatabases(backupconfig.databases) = 0) // No databases found
+	{
+		write "No Databases Found, adding DATA database for the current namespace:",!
+		do ..AddDatabases([ (##class(ITZOS.K8S.Utilities.Namespace).GetDataDatabaseForNamespace()) ])
+	}
+
 	do ..UpdateSystemTasks("FullDBList", backupconfig.fullBackup.folder)
 	do ..UpdateSystemTasks("CumuIncrDBList", backupconfig.cumulativeBackup.folder)
 
@@ -96,27 +101,94 @@ ClassMethod Load(config As %DynamicObject)
 }
 
 /// Add databases
-ClassMethod AddDatabases(databases As %DynamicArray)
+ClassMethod AddDatabases(databases As %DynamicArray) As %Integer
 {
 	new $Namespace
 	set $Namespace = "%SYS"
 
 	do ##class(Backup.General).ClearDatabaseList()
 
+	set count = 0
+
 	for index = 0:1:databases.%Size() - 1
 	{
 		set database = databases.%Get(index)
-		set sc = ##class(Backup.General).AddDatabaseToList(database)
-	
-		if $$$ISERR(sc)
+
+		if ..DatabaseExistsAndNotReadonly(.database)
 		{
-			write "Failed to add database '",database,"' to the backup list: ",$SYSTEM.Status.GetErrorText(sc),!
-		}
-		else
-		{
-			write "Database '",database,"' has been added to the backup list",!
+			set sc = ##class(Backup.General).AddDatabaseToList(database)
+		
+			if $$$ISERR(sc)
+			{
+				write "Failed to add database '",database,"' to the backup list: ",$SYSTEM.Status.GetErrorText(sc),!
+			}
+			else
+			{
+				write "Database '",database,"' has been added to the backup list",!
+				set count = count + 1
+			}
 		}
 	}
+
+	return count
+}
+
+/// Check if the specified database exists and is not readonly
+ClassMethod DatabaseExistsAndNotReadonly(ByRef database As %String) As %Boolean
+{
+	new $Namespace
+	set $Namespace = "%SYS"
+
+    // Return the ^system^directory where the database is located.<br> 
+    set serverAndDb = ##class(Config.Databases).DatabaseByName(database)
+
+    if (serverAndDb = "")
+	{
+		if (database [ "_DATA")
+		{
+			set database2 = $REPLACE(database, "_DATA", "")
+			set serverAndDb2 = ##class(Config.Databases).DatabaseByName(database2)
+
+			if (serverAndDb2 '= "")
+			{
+				write "WARNING: Database ",database," does not exist, using database ",database2,! 
+				set serverAndDb = serverAndDb2
+				set database = database2
+			}
+		}
+		else // Maybe namespace is specified, see if there is a separate database for DATA
+		{
+			set database2 = ##class(ITZOS.K8S.Utilities.Namespace).GetDataDatabaseForNamespace(database)
+
+			if (database2 '= "")
+			{
+				set serverAndDb2 = ##class(Config.Databases).DatabaseByName(database2)
+
+				if (serverAndDb2 '= "")
+				{
+					write "WARNING: Database ",database," does not exist, using database ",database2,! 
+					set serverAndDb = serverAndDb2
+					set database = database2
+				}
+			}
+		}
+	}
+
+    if serverAndDb = ""
+    {
+        write "WARNING: Database ",database," does not exist (skipped)",!
+        return 0	
+    }
+
+    set db = ##Class(SYS.Database).%OpenId($PIECE(serverAndDb, "^", 3))
+
+    if db.ReadOnly
+    {
+        write "WARNING: Database ",database," is readonly (skipped)",!
+        return 0
+    }
+
+    return 1
 }
 
 /// Create Task Schedule
