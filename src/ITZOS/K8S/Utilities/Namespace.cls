@@ -80,6 +80,22 @@ ClassMethod CreateALLNamespace()
 	}
 }
 
+/// Get DATA database for a namespace
+ClassMethod GetDataDatabaseForNamespace(namespace As %String = {$NAMESPACE}) As %String
+{
+	new $NAMESPACE
+	set $NAMESPACE = "%SYS"
+
+	set sc = ##class(Config.Namespaces).Get(namespace, .properties)
+
+	if $$$ISERR(sc)
+	{
+		return ""
+	}
+
+	return properties("Globals")
+}
+
 /// Get CODE database for a namespace
 ClassMethod GetCodeDatabaseForNamespace(namespace As %String = {$NAMESPACE}) As %String
 {
