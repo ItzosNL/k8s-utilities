@@ -137,11 +137,14 @@ ClassMethod EmailAddressesToList(addresses As %String) As %ListOfDataTypes
 {
 	set list = ##class(%ListOfDataTypes).%New()
 
-	for index = 1:1:$LENGTH(addresses, ",")
+	if addresses '= ""
 	{
-		do list.Insert($PIECE(addresses, ",", index))
+		for index = 1:1:$LENGTH(addresses, ",")
+		{
+			do list.Insert($PIECE(addresses, ",", index))
+		}
 	}
-
+	
 	return list
 }
 
