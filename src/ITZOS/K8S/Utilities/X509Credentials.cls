@@ -15,16 +15,9 @@ ClassMethod Test()
         "certificatespath": "/home/irisowner/certificates",
 		"x509Credentials": [
 			{
-				"name": "dvza-preprod.healthexchange.nl",
-				"cert": "dvza-preprod.healthexchange.nl.cer",
-				"key": "dvza-preprod.healthexchange.nl.key",
-				"capath": ""
-			},
-			{
-				"name": "preprod-tvs-rd.dictu.nl",
-				"cert": "preprod-tvs-rd.dictu.nl.cer",
-				"key": "",
-				"capath": "preprod-tvs-rd.dictu.nl_chain.cer"
+				"name": "LAB24",
+				"cert": "ONS-nedap-staging.cer",
+				"key": "ONS-nedap-staging.key"
 			}
 		]
 	}
