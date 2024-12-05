@@ -44,7 +44,7 @@ ClassMethod AddPurgeMessagesTask(numberOfDaysToKeep As %Integer = 31, bodiesToo 
 
 	do ..Load([
 		{
-			"name": "Purge Messages",
+			"name": ("Purge Messages " _ $NAMESPACE),
 			"description": ("Purge messages (" _ $CASE(bodiesToo, 1: "incl.", :"without") _ " bodies) of type " _ typesToPurge _ " keeping " _ numberOfDaysToKeep _ " days"),
 			"taskClass": "Ens.Util.Tasks.Purge",
 			"type": "Daily",
