@@ -23,6 +23,41 @@ ClassMethod Test()
 	])
 }
 
+/// Add Purge Messages Task
+/// Based on https://itzos.atlassian.net/wiki/spaces/IB/pages/67993601/Taak+voor+het+verwijderen+van+oude+berichten.
+ClassMethod AddPurgeMessagesTask(numberOfDaysToKeep As %Integer = 31, bodiesToo As %Boolean = 1, typesToPurge As %String = "all")
+{
+	#; #dim class as Ens.Util.Tasks.Purge
+	#; Property NumberOfDaysToKeep As %Integer(MINVAL = 0) [ InitialExpression = 7 ];
+
+	#; /// Preserve messages not yet completely processed
+	#; Property KeepIntegrity As %Boolean [ InitialExpression = 1 ];
+
+	#; /// Delete message bodies whenever their message header is deleted. This is off by default because some Productions may
+	#; /// use message objects that are part of a larger environment and not transitory.
+	#; Property BodiesToo As %Boolean [ InitialExpression = 0 ];
+
+	#; /// The type of thing to purge
+	#; Property TypesToPurge As %String
+	#; DISPLAYLIST = ",All Types,Events,Messages,Business Processes,Rule Logs,I/O Logs,Host Monitor Data,Managed Alerts"
+	#; VALUELIST = ",all,events,messages,processes,rulelogs,iologs,hostcounters,managedalerts") [ InitialExpression = "events];
+
+	do ..Load([
+		{
+			"name": ("Purge Messages " _ $NAMESPACE),
+			"description": ("Purge messages (" _ $CASE(bodiesToo, 1: "incl.", :"without") _ " bodies) of type " _ typesToPurge _ " keeping " _ numberOfDaysToKeep _ " days"),
+			"taskClass": "Ens.Util.Tasks.Purge",
+			"type": "Daily",
+			"time": "01:00:00",
+			"properties": {
+				"NumberOfDaysToKeep": (numberOfDaysToKeep),
+				"BodiesToo": (bodiesToo),
+				"TypesToPurge": (typesToPurge)
+			}
+    	}
+	])
+}
+
 /// Load ScheduledTasks from after-install.json
 ClassMethod Load(tasks As %DynamicArray)
 {
@@ -102,11 +137,14 @@ ClassMethod EmailAddressesToList(addresses As %String) As %ListOfDataTypes
 {
 	set list = ##class(%ListOfDataTypes).%New()
 
-	for index = 1:1:$LENGTH(addresses, ",")
+	if addresses '= ""
 	{
-		do list.Insert($PIECE(addresses, ",", index))
+		for index = 1:1:$LENGTH(addresses, ",")
+		{
+			do list.Insert($PIECE(addresses, ",", index))
+		}
 	}
-
+	
 	return list
 }
 

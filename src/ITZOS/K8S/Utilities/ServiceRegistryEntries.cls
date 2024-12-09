@@ -10,10 +10,11 @@ ClassMethod Test()
 {
 	do ..Load([
         {
-          "name": "mock-fhirserver-stu3",
-          "host": "tool-mock-fhirserver-stu3.hex-tools-o",
-          "url" : "/mock/fhir/1",
-          "port": 80
+          "name": "Lab24FHIR",
+          "host": "altrecht.acc.mconsole.nl",
+          "url" : "/fhir",
+          "port": 443,
+		  "sslconfig": "Default"
         }
       ])
 }
