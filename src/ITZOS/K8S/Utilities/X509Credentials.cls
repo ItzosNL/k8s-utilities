@@ -15,12 +15,12 @@ ClassMethod Test()
         "certificatespath": "/home/irisowner/certificates",
 		"x509Credentials": [
 			{
-				"name": "LAB24",
-				"cert": "ONS-nedap-staging.cer",
-				"key": "ONS-nedap-staging.key"
+			"name": "LAB24",
+			"cert": "LAB24.pem",
+			"key": "LAB24.key"
 			}
 		]
-	}
+	  }
 	)
 }
 

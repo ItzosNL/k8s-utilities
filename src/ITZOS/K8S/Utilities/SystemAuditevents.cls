@@ -10,9 +10,14 @@ ClassMethod Test()
 {
 	do ..Load(
         {
-          "%System/%Login/LoginFlailure": true,
-          "LoginFailure": true,
-          "%Login/JobStart": false
+			"%System/%Login/Login": true,
+			"%System/%Login/LoginFailure": true,
+			"%System/%Login/Logout": true,
+			"%System/%Login/LoginFailure": true,
+			"%System/%Login/TaskEnd": true,
+			"%System/%Login/TaskStart": true,
+			"%System/%Login/Terminate": true,
+			"%System/%Login/JobStart": true
         }
       )
 }
