@@ -36,7 +36,7 @@ ClassMethod GetVersion() As %Status
 {
 	try
 	{
-		return $PARAMETER("%ZPM.Installer", "VERSION")
+		return $PARAMETER("IPM.Installer", "VERSION")
 	}
 	catch
 	{
@@ -50,7 +50,13 @@ ClassMethod GetPackageVersion(namespace As %String, packageName As %String) As %
 	new $NAMESPACE
 	set $NAMESPACE = namespace
 	
-	#dim result as %SQL.StatementResult = ##class(%SQL.Statement).%ExecDirect(, "SELECT VersionString FROM %ZPM_PackageManager_Developer.""MODULE"" WHERE Name = ?", packageName)
+	if '$$$comClassDefined("%IPM.Storage.Module")
+	{
+		// Don't error in namespaces without IPM enabled
+		return ""
+	}
+
+	#dim result as %SQL.StatementResult = ##class(%SQL.Statement).%ExecDirect(, "SELECT VersionString FROM %IPM_Storage.ModuleItem WHERE Name = ?", packageName)
 
 	if (result.%SQLCODE < 0)
 	{
