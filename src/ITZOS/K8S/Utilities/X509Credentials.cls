@@ -16,8 +16,12 @@ ClassMethod Test()
 		"x509Credentials": [
 			{
 			"name": "LAB24",
-			"cert": "LAB24.pem",
-			"key": "LAB24.key"
+			"cert": "ONS-nedap-staging.cer",
+			"key": "ONS-nedap-staging.key"
+			},
+			{
+			"name": "code24_acc",
+			"cert": "code24.cer"
 			}
 		]
 	  }

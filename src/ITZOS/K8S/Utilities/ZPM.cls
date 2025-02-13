@@ -79,10 +79,17 @@ ClassMethod IsVersionGreateOrEqual(current As %String, target As %String) As %Bo
         return 1
     }
 
-    #dim currentSemver as %ZPM.PackageManager.Core.SemanticVersion = ##class(%ZPM.PackageManager.Core.SemanticVersion).FromString(current)
-    #dim targetSemver as %ZPM.PackageManager.Core.SemanticVersion = ##class(%ZPM.PackageManager.Core.SemanticVersion).FromString(target)
+	try
+	{
+		#dim currentSemver as %IPM.General.SemanticVersion = ##class(%IPM.General.SemanticVersion).FromString(current)
+		#dim targetSemver as %IPM.General.SemanticVersion = ##class(%IPM.General.SemanticVersion).FromString(target)
 
-    return currentSemver.Follows(targetSemver)
+	    return currentSemver.Follows(targetSemver)
+	}
+	catch
+	{
+		return 0
+	}
 }
 
 }
