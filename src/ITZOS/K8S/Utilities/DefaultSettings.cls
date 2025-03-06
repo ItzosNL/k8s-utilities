@@ -8,6 +8,9 @@ Parameter AfterInstallNode = "systemdefaultspath";
 /// Please ignore and log no warning
 Parameter AfterInstallMode = "skip";
 
+/// Does this type require Interop?
+Parameter AfterInstallInterop As BOOLEAN = 1;
+
 /// Export to settingsfile
 ClassMethod Export(toFile As %String = "/tmp/Ens.Config.DefaultSettings.esd", productionName As %String = "") As %Status
 {

@@ -5,6 +5,9 @@ Class ITZOS.K8S.Utilities.Production
 /// Node from the after-install.config processed by this class.
 Parameter AfterInstallNode = "production";
 
+/// Does this type require Interop?
+Parameter AfterInstallInterop As BOOLEAN = 1;
+
 /// Test
 ClassMethod Test()
 {

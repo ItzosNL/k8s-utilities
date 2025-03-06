@@ -5,6 +5,9 @@ Class ITZOS.K8S.Utilities.Credentials
 /// Node from the after-install.config processed by this class.
 Parameter AfterInstallNode = "credentials";
 
+/// Does this type require Interop?
+Parameter AfterInstallInterop As BOOLEAN = 1;
+
 /// Load all Credentials
 ClassMethod Load(credentials As %DynamicArray)
 {

@@ -5,6 +5,9 @@ Class ITZOS.K8S.Utilities.LookupTables
 /// Node from the after-install.config processed by this class.
 Parameter AfterInstallNode = "lookupTables";
 
+/// Does this type require Interop?
+Parameter AfterInstallInterop As BOOLEAN = 1;
+
 /// Test Load method
 ClassMethod Test()
 {
