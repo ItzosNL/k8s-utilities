@@ -13,13 +13,16 @@ ClassMethod LoadConfigmaps(configmapFolder As %String)
     set configmapFilename = configmapFolder _ "/after-install.json"
     #dim config as %DynamicObject = {}.%FromJSONFile(configmapFilename)
 
-    if config.systemdefaultspath = ""
+    if ('config.%IsDefined("interop")) || config.interop
     {
-        // Original hard-coded path
-        set config.systemdefaultspath = configmapFolder _ "/Ens.Config.DefaultSettings.esd"
-    }
+        if config.systemdefaultspath = ""
+        {
+            // Original hard-coded path
+            set config.systemdefaultspath = configmapFolder _ "/Ens.Config.DefaultSettings.esd"
+        }
 
-    do ##class(ITZOS.K8S.Utilities.DefaultSettings).Import(config.systemdefaultspath)
+        do ##class(ITZOS.K8S.Utilities.DefaultSettings).Import(config.systemdefaultspath)
+    }
 
     write "Execute after-install actions based on the configmap:", !
     do ..ExecuteActions2(config, configmapFilename)
@@ -52,11 +55,18 @@ ClassMethod ExecuteActions2(config As %DynamicObject, configmapFilename As %Stri
         do ##class(ITZOS.K8S.InstallMonitoring).Check(config.monitoring)
     }
 
+    set hasInterop = ('config.%IsDefined("interop")) || config.interop
     #dim allHandlers as %DynamicObject = ..GetAfterInstallHandlers()
 	#dim iterator As %Iterator.Object = config.%GetIterator()
 
 	while iterator.%GetNext(.key, .value)
 	{
+        if (key = "interop")
+        {
+            write "interop is ",$CASE(value, 1: "enabled", : "disabled"),!
+            continue
+        }
+
         #; write "Handling key ",key,!
         #dim handlers as %DynamicArray = allHandlers.%Get(key)
 
@@ -69,7 +79,14 @@ ClassMethod ExecuteActions2(config As %DynamicObject, configmapFilename As %Stri
         for index = 1:1:handlers.%Size()
         {
             set handlerClass = handlers.%Get(index - 1)
-            
+            set requiresInterop = ($PARAMETER(handlerClass, "AfterInstallInterop") = 1)
+
+            if requiresInterop && ('hasInterop)
+            {
+                write "Skipping ",handlerClass," because it requires interop and interop is disabled",key 
+                continue // skip!
+            }
+
             set afterInstallMode = $PARAMETER(handlerClass, "AfterInstallMode")
             if afterInstallMode = "skip"
             {
