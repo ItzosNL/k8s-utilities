@@ -73,12 +73,14 @@ XData Manifest [ XMLNamespace = INSTALLER ]
 				<ClassMapping Package="ITZOS" From="USER"/><!-- for installer-->
 			</Configuration>
 
-			<Invoke Class="%ZHSLIB.HealthShareMgr" Method="EnableHealthShareNamespace" CheckStatus="true" >
-				<Arg Value="${Namespace}"/>
-				<Arg Value="0"/>
-				<Arg Value="1"/>
-				<Arg Value="1"/>
-			</Invoke>
+			<If Condition='(##class(Config.Namespaces).Exists("HSLIB")=1)'>
+				<Invoke Class="%ZHSLIB.HealthShareMgr" Method="EnableHealthShareNamespace" CheckStatus="true" >
+					<Arg Value="${Namespace}"/>
+					<Arg Value="0"/>
+					<Arg Value="1"/>
+					<Arg Value="1"/>
+				</Invoke>
+			</If>
 		</Namespace>
 	</If>
 </Manifest>
