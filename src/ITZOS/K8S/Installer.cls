@@ -66,8 +66,10 @@ XData Manifest [ XMLNamespace = INSTALLER ]
 			<Configuration>
 				<Database Name="${Namespace}_CODE" Dir="${MGRDIR}${Namespace}_CODE" Create="yes" Resource="%DB_${Namespace}"/>
 				<Database Name="${Namespace}_DATA" Dir="${MGRDIR}${Namespace}_DATA" Create="yes" Resource="%DB_${Namespace}"/>
-				<ClassMapping Package="HS" From="HSLIB"/>
-				<ClassMapping Package="HSMOD" From="HSLIB"/>
+				<If Condition='(##class(Config.Namespaces).Exists("HSLIB")=1)'>
+					<ClassMapping Package="HS" From="HSLIB" />
+					<ClassMapping Package="HSMOD" From="HSLIB"/>
+				</If>
 				<ClassMapping Package="ITZOS" From="USER"/><!-- for installer-->
 			</Configuration>
 
