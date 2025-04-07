@@ -29,9 +29,6 @@ ClassMethod Test()
         }
       },
       "backup-config": {
-        #; "databases" : [
-        #;   "ALTRECHT"
-        #; ],
         "email": {
           "emailOnCompletion": "theo.stolker@intersystems.com",
           "emailOnError": "theo.stolker@intersystems.com",
