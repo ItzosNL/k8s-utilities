@@ -18,7 +18,7 @@ ClassMethod Load() As %Status
 	set httpRequest = ##class(%Net.HttpRequest).%New()
 	set httpRequest.Server = "pm.community.intersystems.com"
 	set httpRequest.SSLConfiguration = "Default"
-	set location = "/packages/zpm/latest/installer"
+	set location = "/packages/zpm/0.9.2/installer"
 
 	set sc = httpRequest.Get(location)
 
