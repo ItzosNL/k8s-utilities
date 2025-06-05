@@ -22,7 +22,7 @@ ClassMethod Prepare(namespace As %String)
 		return
 	}
 
-	write "Creating SSL Config 'default': ",!
+	write "Creating SSL Config 'Default': ",!
 	do ##class(ITZOS.K8S.Utilities.SSLConfigs).CreateSSLConfig("Default")
 
 	write "Loading ZPM: ",!
