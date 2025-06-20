@@ -7,6 +7,9 @@ ClassMethod LoadConfigmaps(configmapFolder As %String)
 {
     do ##class(ITZOS.K8S.AfterInstall).MapITZOSPackagetoAll()
 
+	write "Creating SSL Config 'Default': ",!
+	do ##class(ITZOS.K8S.Utilities.SSLConfigs).CreateSSLConfig("Default")
+
     // we found out ZPM may be in disrepair, so we reload it 
     do ##class(ITZOS.K8S.Utilities.ZPM).Load()
 
