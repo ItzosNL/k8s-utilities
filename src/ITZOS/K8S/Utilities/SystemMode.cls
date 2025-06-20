@@ -33,4 +33,15 @@ ClassMethod Load(systemMode As %String)
     }
 }
 
+/// Get the SystemMode
+ClassMethod Get() As %String
+{
+	new $NAMESPACE
+	set $NAMESPACE = "%SYS"
+
+    set sc = ##Class(Config.Startup).Get(.properties)
+
+    return properties("SystemMode")
+}
+
 }
