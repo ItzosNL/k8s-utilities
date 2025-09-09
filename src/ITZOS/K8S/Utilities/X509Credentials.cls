@@ -102,4 +102,40 @@ ClassMethod CreateX509Credentials(name As %String, certPath As %String = "", key
 	return sc
 }
 
+/// List x509 certificates with their expiry date
+ClassMethod ListCertificates(expireInDays As %Integer = "")
+{
+	set query = 0
+	set args = 0
+	// IssuerDN, SubjectDN, 
+	set query($Increment(query)) = "SELECT ID, Alias, ValidityNotBefore, ValidityNotAfter, DATEDIFF(D,CURRENT_TIMESTAMP,ValidityNotAfter) as daysValid FROM %SYS.X509Credentials"
+
+	if expireInDays '= ""
+	{
+		set query($Increment(query)) = "WHERE DATEDIFF(D,CURRENT_TIMESTAMP,ValidityNotAfter) <= ?"
+		set args($Increment(args)) = expireInDays
+	}
+
+    set result = ##class(%SQL.Statement).%ExecDirect(, .query, args...)
+
+    if result.%SQLCODE < 0
+    {
+        throw ##class(%Exception.SQL).CreateFromSQLCODE(result.%SQLCODE,result.%Message)
+    }
+
+	set count = 0
+	set spaces = "               "
+
+    while result.%Next()
+    {
+		if count = 0
+		{
+			write "ID          Alias       ValidityNotBefore   ValidityNotAfter    daysValid",!
+		}
+
+		write result.ID,$EXTRACT(spaces, 1, 12 - $LENGTH(result.ID)),result.Alias,$EXTRACT(spaces, 1, 12 - $LENGTH(result.Alias)),result.ValidityNotBefore," ",result.ValidityNotAfter," ",result.daysValid,!
+		set count = count + 1
+	}
+}
+
 }
