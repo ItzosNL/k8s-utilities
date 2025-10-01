@@ -10,20 +10,36 @@ Parameter AfterInstallNode = "remotedb";
 /// Test load method
 ClassMethod Test()
 {
+	#; do ##class(ITZOS.K8S.AfterInstall).ExecuteActions2({
+	#; 	"remotedb": {
+	#; 		"databasename": "REMOTE_DATABASE",
+	#; 		"remoteserver": "IRIS-0",
+	#; 		"directory": "/irissys/data/IRIS/mgr/MMLOGGING_DATA/",
+	#; 		"globalmapping": [
+	#; 			{
+	#; 				"namespace": "MMLOGGING",
+	#; 				"globalnames": [
+	#; 					"MMLOGGINGPKG.DB.Aanlevering*",
+	#; 					"MMLOGGINGPKG.DB.Logregel*"
+	#; 				]
+	#; 			}
+	#; 		]
+	#; 	}
+	#; })
+	// For mirrored database, notice the different name for directory
 	do ##class(ITZOS.K8S.AfterInstall).ExecuteActions2({
 		"remotedb": {
-			"databasename": "REMOTE_DATABASE",
-			"remoteserver": "IRIS-0",
-			"directory": "/irissys/data/IRIS/mgr/MMLOGGING_DATA/",
-			"globalmapping": [
-				{
-					"namespace": "MMLOGGING",
-					"globalnames": [
-						"MMLOGGINGPKG.DB.Aanlevering*",
-						"MMLOGGINGPKG.DB.Logregel*"
-					]
-				}
-			]
+		"databasename": "REMOTE_DATABASE",
+		"remoteserver": "IRIS-0",
+		"directory": ":mirror:IRISMIRROR1:BTDV1_DATA",
+		"globalmapping": [
+			{
+				"namespace": "BTDV1",
+				"globalnames": [
+					"%SYS.Log*"
+				]
+			}
+		]
 		}
 	})
 }
