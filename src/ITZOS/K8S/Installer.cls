@@ -76,9 +76,6 @@ XData Manifest [ XMLNamespace = INSTALLER ]
 			<If Condition='(##class(Config.Namespaces).Exists("HSLIB")=1)'>
 				<Invoke Class="%ZHSLIB.HealthShareMgr" Method="EnableHealthShareNamespace" CheckStatus="true" >
 					<Arg Value="${Namespace}"/>
-					<Arg Value="0"/>
-					<Arg Value="1"/>
-					<Arg Value="1"/>
 				</Invoke>
 			</If>
 		</Namespace>
